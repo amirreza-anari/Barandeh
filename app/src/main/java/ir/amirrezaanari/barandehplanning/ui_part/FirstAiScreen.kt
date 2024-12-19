@@ -55,8 +55,8 @@ fun AiFirstScreen(){
         }
         Spacer(modifier = Modifier.weight(1f))
         Image(
-            modifier = Modifier.size(330.dp),
-            painter = painterResource(id = R.drawable.robot_planning),
+            modifier = Modifier.size(400.dp),
+            painter = painterResource(id = R.drawable.ai_thinking),
             contentDescription = "AiFirstScreen Image"
         )
     }
