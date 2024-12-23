@@ -1,4 +1,4 @@
-package ir.amirrezaanari.barandehplanning.ui_part
+package ir.amirrezaanari.barandehplanning.ui_part.nav_part
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource

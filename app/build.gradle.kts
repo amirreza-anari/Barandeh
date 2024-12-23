@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -10,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "ir.amirrezaanari.barandehplanning"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -59,4 +60,11 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 //    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.27.0")
     implementation(libs.twain)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.ksp.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.material.icons.extended)
 }
