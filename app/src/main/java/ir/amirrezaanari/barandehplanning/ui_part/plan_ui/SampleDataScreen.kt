@@ -33,12 +33,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
+import okhttp3.internal.concurrent.Task
 
 
 @Composable
 fun TaskPlannerScreen(viewModel: TaskViewModel, navController: NavController) {
     var selectedTab by remember { mutableStateOf(0) }
-    var showDialog by remember { mutableStateOf(false) }
+    var selectedTask by remember { mutableStateOf<Task?>(null) }
 
     Scaffold(
         floatingActionButton = {
@@ -119,28 +120,6 @@ fun TaskPlannerScreen(viewModel: TaskViewModel, navController: NavController) {
                 1 -> CompletedTasksScreen(viewModel)
             }
         }
-
-        if (showDialog) {
-            AddTaskDialog(
-                onDismiss = { showDialog = false },
-                onAddTask = { name, startTime, endTime ->
-                    when (selectedTab) {
-                        0 -> {
-                            viewModel.addPlannedTask(
-                                PlannedTask(name = name, startTime = startTime, endTime = endTime)
-                            )
-                        }
-
-                        1 -> {
-                            viewModel.addCompletedTask(
-                                CompletedTask(name = name, startTime = startTime, endTime = endTime)
-                            )
-                        }
-                    }
-                    showDialog = false
-                }
-            )
-        }
     }
 }
 
@@ -148,7 +127,6 @@ fun TaskPlannerScreen(viewModel: TaskViewModel, navController: NavController) {
 @Composable
 fun PlannedTasksScreen(viewModel: TaskViewModel) {
     val plannedTasks by viewModel.plannedTasks.collectAsState(initial = emptyList())
-    var showDialog by remember { mutableStateOf(false) }
     var selectedTask by remember { mutableStateOf<PlannedTask?>(null) }
 
     LazyColumn {
@@ -159,34 +137,15 @@ fun PlannedTasksScreen(viewModel: TaskViewModel) {
                 endtime = task.endTime,
                 onClick = {
                     selectedTask = task // ذخیره‌ی تسک انتخاب‌شده
-                    showDialog = true
                 }
             )
-
-
         }
-    }
-    if (showDialog && selectedTask != null) {
-        EditTaskDialog(
-            taskName = selectedTask!!.name,
-            taskStartTime = selectedTask!!.startTime,
-            taskEndTime = selectedTask!!.endTime,
-            onDismiss = { showDialog = false },
-            onSave = { name, startTime, endTime ->
-                // ذخیره تغییرات
-                selectedTask?.let {
-                    val updatedTask = it.copy(name = name, startTime = startTime, endTime = endTime)
-                    viewModel.updatePlannedTask(updatedTask)
-                }
-            }
-        )
     }
 }
 
 @Composable
 fun CompletedTasksScreen(viewModel: TaskViewModel) {
     val completedTasks by viewModel.completedTasks.collectAsState(initial = emptyList())
-    var showDialog by remember { mutableStateOf(false) }
     var selectedTask by remember { mutableStateOf<CompletedTask?>(null) }
 
     LazyColumn {
@@ -197,24 +156,8 @@ fun CompletedTasksScreen(viewModel: TaskViewModel) {
                 endtime = task.endTime,
                 onClick = {
                     selectedTask = task // ذخیره‌ی تسک انتخاب‌شده
-                    showDialog = true
                 }
             )
         }
-    }
-    if (showDialog && selectedTask != null) {
-        EditTaskDialog(
-            taskName = selectedTask!!.name,
-            taskStartTime = selectedTask!!.startTime,
-            taskEndTime = selectedTask!!.endTime,
-            onDismiss = { showDialog = false },
-            onSave = { name, startTime, endTime ->
-                // ذخیره تغییرات
-                selectedTask?.let {
-                    val updatedTask = it.copy(name = name, startTime = startTime, endTime = endTime)
-                    viewModel.updateCompletedTask(updatedTask)
-                }
-            }
-        )
     }
 }

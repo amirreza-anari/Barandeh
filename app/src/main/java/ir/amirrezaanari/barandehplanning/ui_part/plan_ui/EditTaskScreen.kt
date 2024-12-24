@@ -51,14 +51,20 @@ import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
 import ir.amirrezaanari.barandehplanning.ui.theme.secondary
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 @Composable
-fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
+fun EditTaskScreen(
+    viewModel: TaskViewModel,
+    navController: NavController,
+    taskNameEntry: String,
+    startTimeEntry: String,
+    endTimeEntry: String,
+    onSave: (String, String, String) -> Unit
+) {
     val focusManager = LocalFocusManager.current
-    var taskName by remember { mutableStateOf("") }
-    var startTime by remember { mutableStateOf("زمان شروع") }
-    var endTime by remember { mutableStateOf("زمان پایان") }
+    var taskName by remember { mutableStateOf(taskNameEntry) }
+    var startTime by remember { mutableStateOf(startTimeEntry) }
+    var endTime by remember { mutableStateOf(endTimeEntry) }
     var isStartTimeDialogOpen by remember { mutableStateOf(false) }
     var isEndTimeDialogOpen by remember { mutableStateOf(false) }
 
@@ -94,7 +100,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("افزودن برنامه", fontSize = 20.sp)
+                    Text("ویرایش برنامه", fontSize = 20.sp)
                 }
             }
         }
@@ -154,7 +160,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
                 focusedLabelColor = mainwhite,
                 focusedPlaceholderColor = mainwhite,
 
-            )
+                )
         )
 
         Row(
@@ -198,8 +204,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
 
             if (isStartTimeDialogOpen) {
                 Dialog(onDismissRequest = { isStartTimeDialogOpen = false }) {
-                    var dialogeStartTime by remember { mutableStateOf(LocalTime.now().format(
-                        DateTimeFormatter.ofPattern("HH:mm"))) }
+                    var dialogeStartTime by remember { mutableStateOf(startTime) }
 
                     Card(
                         modifier = Modifier
@@ -228,7 +233,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
                             ) {
                                 TimePicker(
                                     is24TimeFormat = true,
-                                    currentTime = LocalTime.now(),
+                                    currentTime = dialogeStartTime.toTime(),
                                     onTimeChanged = {
                                         dialogeStartTime = it.toString()
                                     },
@@ -246,7 +251,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
                                 ),
                                 onClick = {
                                     isStartTimeDialogOpen = false
-                                    startTime = dialogeStartTime.toString()
+                                    startTime = dialogeStartTime
                                 }
                             ) {
                                 Text("تایید")
@@ -263,7 +268,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
                 textAlign = TextAlign.Center,
                 color = Color.White.copy(alpha = 0.7f)
 
-                )
+            )
             Button(
                 modifier = Modifier.weight(2f),
                 onClick = { isEndTimeDialogOpen = true },
@@ -282,8 +287,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
             if (isEndTimeDialogOpen) {
                 Dialog(onDismissRequest = { isEndTimeDialogOpen = false }) {
 
-                    var dialogeEndTime by remember { mutableStateOf(LocalTime.now().format(
-                        DateTimeFormatter.ofPattern("HH:mm"))) }
+                    var dialogeEndTime by remember { mutableStateOf(endTime) }
 
                     Card(
                         modifier = Modifier
@@ -312,7 +316,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
                             ) {
                                 TimePicker(
                                     is24TimeFormat = true,
-                                    currentTime = LocalTime.now(),
+                                    currentTime = endTime.toTime(),
                                     onTimeChanged = {
                                         dialogeEndTime = it.toString()
                                     },
@@ -330,7 +334,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
                                 ),
                                 onClick = {
                                     isEndTimeDialogOpen = false
-                                    endTime = dialogeEndTime.toString()
+                                    endTime = dialogeEndTime
                                 }
                             ) {
                                 Text("تایید")
@@ -344,22 +348,39 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Button(
-            onClick = {
-                viewModel.addPlannedTask(
-                    PlannedTask(name = taskName, startTime = startTime, endTime = endTime)
+        Row {
+            Button(
+                onClick = {
+                    viewModel.addPlannedTask(
+                        PlannedTask(name = taskName, startTime = startTime, endTime = endTime)
+                    )
+                    navController.popBackStack()
+                },
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth(0.5f),
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = mainwhite,
+                    containerColor = Color.Red
                 )
-                navController.popBackStack()
-            },
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                contentColor = primary,
-                containerColor = mainwhite
-            )
-        ) {
-            Text("تایید", fontSize = 17.sp)
+            ) {
+                Text("حذف کردن", fontSize = 17.sp)
+            }
+            Button(
+                onClick = {
+                    onSave(taskName, startTime, endTime)
+                    navController.popBackStack()
+                },
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = primary,
+                    containerColor = mainwhite
+                )
+            ) {
+                Text("تایید", fontSize = 17.sp)
+            }
         }
     }
 }

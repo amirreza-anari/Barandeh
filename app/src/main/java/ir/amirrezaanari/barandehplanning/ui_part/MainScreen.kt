@@ -28,20 +28,22 @@ import androidx.compose.runtime.collectAsState
 @Composable
 fun MainScreen(taskViewModel: TaskViewModel) {
     val navController = rememberNavController()
-    val currentRoute = navController.currentBackStackEntryFlow.collectAsState(initial = null).value?.destination?.route
+//    val currentRoute = navController.currentBackStackEntryFlow.collectAsState(initial = null).value?.destination?.route
 
     Scaffold(
         bottomBar = {
-            if (currentRoute != "add_task_screen") {
-                BottomNavigationBar(navController)
-            }
+            BottomNavigationBar(navController)
+//            if (currentRoute != "add_task_screen") {
+//                BottomNavigationBar(navController)
+//            }
         }
-    ) { paddingValues -> // دریافت فضای خالی برای محتوای اصلی
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    if (currentRoute == "add_task_screen") PaddingValues(0.dp) else paddingValues
+                    paddingValues
+//                    if (currentRoute == "add_task_screen") PaddingValues(0.dp) else paddingValues
                 )
 
         ) {

@@ -21,6 +21,18 @@ import ir.amirrezaanari.barandehplanning.ui.theme.CustomTypography
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 
+
+private fun toPersianNumber(number: String): String {
+    val persianDigits = arrayOf('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹')
+    val builder = StringBuilder()
+    number.forEach {
+        builder.append(
+            if (it.isDigit()) persianDigits[it - '0'] else it
+        )
+    }
+    return builder.toString()
+}
+
 @SuppressLint("DefaultLocale")
 @Composable
 fun TimePicker(
@@ -39,7 +51,7 @@ fun TimePicker(
     val hours = if (is24TimeFormat) (0..23).toList() else (1..12).toList()
     val minutes = (0..59).toList()
 
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr ) {
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = modifier.fillMaxWidth(),
@@ -51,7 +63,7 @@ fun TimePicker(
                 itemHeight = itemHeight,
                 dividerConfig = dividerConfig,
                 textStyles = textStyles,
-                formatNumber = { if (is24TimeFormat) String.format("%02d", it) else it.toString() },
+                formatNumber = { toPersianNumber(if (is24TimeFormat) String.format("%02d", it) else it.toString()) },
                 modifier = Modifier
                     .weight(1f)
                     .height(itemHeight * 5),
@@ -73,7 +85,7 @@ fun TimePicker(
                 itemHeight = itemHeight,
                 dividerConfig = dividerConfig,
                 textStyles = textStyles,
-                formatNumber = { String.format("%02d", it) },
+                formatNumber = { toPersianNumber(String.format("%02d", it)) },
                 modifier = Modifier
                     .weight(1f)
                     .height(itemHeight * 5),

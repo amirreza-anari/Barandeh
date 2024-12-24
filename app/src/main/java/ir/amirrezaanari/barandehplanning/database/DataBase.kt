@@ -13,6 +13,8 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 
 @Entity(tableName = "planned_tasks")
@@ -53,6 +55,11 @@ interface TaskDao {
     @Update
     suspend fun updateCompletedTask(task: CompletedTask)
 
+    @Delete
+    suspend fun deletePlannedTask(task: PlannedTask)
+
+    @Delete
+    suspend fun deleteCompletedTask(task: CompletedTask)
 }
 
 
@@ -93,13 +100,15 @@ class TaskViewModel(private val dao: TaskDao) : ViewModel() {
 
     private fun loadPlannedTasks() {
         viewModelScope.launch {
-            _plannedTasks.value = dao.getAllPlannedTasks()
+            _plannedTasks.value = dao.getAllPlannedTasks().sortedBy { task ->
+                task.startTime.toTime()
+            }
         }
     }
 
     private fun loadCompletedTasks() {
         viewModelScope.launch {
-            _completedTasks.value = dao.getAllCompletedTasks()
+            _completedTasks.value = dao.getAllCompletedTasks().sortedBy { it.startTime.toTime() }
         }
     }
 
@@ -116,21 +125,6 @@ class TaskViewModel(private val dao: TaskDao) : ViewModel() {
             loadCompletedTasks() // بعد از اضافه کردن، لیست را دوباره بارگذاری کن
         }
     }
-
-    fun updatePlannedTask(task: PlannedTask) {
-        viewModelScope.launch {
-            dao.updatePlannedTask(task)
-            loadPlannedTasks()
-        }
-    }
-
-    fun updateCompletedTask(task: CompletedTask) {
-        viewModelScope.launch {
-            dao.updateCompletedTask(task)
-            loadCompletedTasks()
-        }
-    }
-
 }
 
 
@@ -146,3 +140,6 @@ class TaskViewModelFactory(private val dao: TaskDao) : ViewModelProvider.Factory
     }
 }
 
+fun String.toTime(): LocalTime {
+    return LocalTime.parse(this, DateTimeFormatter.ofPattern("HH:mm"))
+}
