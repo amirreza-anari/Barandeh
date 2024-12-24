@@ -10,6 +10,7 @@ import ir.amirrezaanari.barandehplanning.ui_part.plan_ui.TaskPlannerScreen
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import ir.amirrezaanari.barandehplanning.ui_part.plan_ui.AddTaskScreen
+import ir.amirrezaanari.barandehplanning.ui_part.plan_ui.EditTaskScreen
 
 
 @Composable
@@ -40,7 +41,7 @@ fun NavigationGraph(
             TaskPlannerScreen(taskViewModel, navController)
         }
         composable(
-            "add_task_screen",
+            "add_task_screen/{selectedTab}",
             enterTransition = {
                 slideIntoContainer(
                     towards = AnimatedContentTransitionScope.SlideDirection.Right,
@@ -53,8 +54,9 @@ fun NavigationGraph(
                     animationSpec = tween(500)
                 )
             },
-        ) {
-            AddTaskScreen(taskViewModel, navController)
+        ) { backStackEntry ->
+            val selectedTab = backStackEntry.arguments?.getString("selectedTab")?.toIntOrNull() ?: 0
+            AddTaskScreen(taskViewModel, navController, selectedTab)
         }
         composable(
             BottomNavItem.AiAssistant.route,

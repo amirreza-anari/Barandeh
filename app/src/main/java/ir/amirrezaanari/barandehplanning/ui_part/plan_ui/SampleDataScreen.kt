@@ -1,5 +1,16 @@
 package ir.amirrezaanari.barandehplanning.ui_part.plan_ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,6 +47,7 @@ import ir.amirrezaanari.barandehplanning.ui.theme.primary
 import okhttp3.internal.concurrent.Task
 
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TaskPlannerScreen(viewModel: TaskViewModel, navController: NavController) {
     var selectedTab by remember { mutableStateOf(0) }
@@ -44,7 +56,7 @@ fun TaskPlannerScreen(viewModel: TaskViewModel, navController: NavController) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate("add_task_screen") },
+                onClick = { navController.navigate("add_task_screen/$selectedTab") },
                 containerColor = mainwhite
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Task", tint = primary)
@@ -114,11 +126,35 @@ fun TaskPlannerScreen(viewModel: TaskViewModel, navController: NavController) {
                     )
                 )
             }
+//            AnimatedContent(
+//                targetState = selectedTab,
+//                transitionSpec =
+//            ) { }
+            AnimatedContent(
+                targetState = selectedTab,
+                transitionSpec = {
+                    if (targetState == 0) {
+                        // حرکت به سمت "برنامه‌های عمل‌شده"
+//                        fadeIn(animationSpec = tween(500)) with fadeOut(animationSpec = tween(500))
+                        (fadeIn() + scaleIn(initialScale = 0.5f)).togetherWith(fadeOut())
 
-            when (selectedTab) {
-                0 -> PlannedTasksScreen(viewModel)
-                1 -> CompletedTasksScreen(viewModel)
+                    } else {
+                        // حرکت به سمت "برنامه‌های ریخته‌شده"
+//                        fadeIn(animationSpec = tween(500)) with fadeOut(animationSpec = tween(500))
+                        (fadeIn() + scaleIn(initialScale = 0.5f)).togetherWith(fadeOut())
+
+                    }
+                }
+            ) { tab ->
+                when (tab) {
+                    0 -> PlannedTasksScreen(viewModel)
+                    1 -> CompletedTasksScreen(viewModel)
+                }
             }
+//            when (selectedTab) {
+//                0 -> PlannedTasksScreen(viewModel)
+//                1 -> CompletedTasksScreen(viewModel)
+//            }
         }
     }
 }

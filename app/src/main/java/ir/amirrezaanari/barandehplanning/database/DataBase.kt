@@ -125,6 +125,7 @@ class TaskViewModel(private val dao: TaskDao) : ViewModel() {
             loadCompletedTasks() // بعد از اضافه کردن، لیست را دوباره بارگذاری کن
         }
     }
+
 }
 
 

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import ir.amirrezaanari.barandehplanning.database.CompletedTask
 import ir.amirrezaanari.barandehplanning.database.PlannedTask
 import ir.amirrezaanari.barandehplanning.database.TaskViewModel
 import ir.amirrezaanari.barandehplanning.database.toTime
@@ -54,7 +55,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
+fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController, selectedTab: Int) {
     val focusManager = LocalFocusManager.current
     var taskName by remember { mutableStateOf("") }
     var startTime by remember { mutableStateOf("زمان شروع") }
@@ -346,9 +347,15 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController) {
 
         Button(
             onClick = {
-                viewModel.addPlannedTask(
-                    PlannedTask(name = taskName, startTime = startTime, endTime = endTime)
-                )
+                if (selectedTab == 0) {
+                    viewModel.addPlannedTask(
+                        PlannedTask(name = taskName, startTime = startTime, endTime = endTime)
+                    )
+                } else {
+                    viewModel.addCompletedTask(
+                        CompletedTask(name = taskName, startTime = startTime, endTime = endTime)
+                    )
+                }
                 navController.popBackStack()
             },
             shape = RoundedCornerShape(8.dp),
