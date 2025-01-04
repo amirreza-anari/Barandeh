@@ -10,7 +10,10 @@ import ir.amirrezaanari.barandehplanning.ui_part.plan_ui.TaskPlannerScreen
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import ir.amirrezaanari.barandehplanning.ui_part.plan_ui.AddTaskScreen
+import ir.amirrezaanari.barandehplanning.ui_part.plan_ui.AddVoicePTask
 import ir.amirrezaanari.barandehplanning.ui_part.plan_ui.EditTaskScreen
+import ir.amirrezaanari.barandehplanning.ui_part.plan_ui.PlannedTasksScreen
+import ir.amirrezaanari.barandehplanning.ui_part.plan_ui.PlannerScreen
 
 
 @Composable
@@ -38,7 +41,7 @@ fun NavigationGraph(
                 )
             }
         ) {
-            TaskPlannerScreen(taskViewModel, navController)
+            AddVoicePTask()
         }
         composable(
             "add_task_screen/{selectedTab}",

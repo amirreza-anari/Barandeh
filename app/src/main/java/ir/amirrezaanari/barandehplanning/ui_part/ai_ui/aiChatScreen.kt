@@ -31,10 +31,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import dev.jeziellago.compose.markdowntext.MarkdownText
 import ir.amirrezaanari.barandehplanning.AiViewModel
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.secondary
-import ir.amirrezaanari.barandehplanning.ui_part.MarkdownCustom
+//import ir.amirrezaanari.barandehplanning.ui_part.MarkdownCustom
 import kotlinx.coroutines.delay
 
 @Composable
@@ -125,9 +126,7 @@ fun AiChatScreen(navController: NavHostController, viewModel: AiViewModel){
                             .padding(10.dp),
                     ) {
                         item {
-                            MarkdownCustom(
-                                text = aiResponse,
-                            )
+                            MarkdownText(aiResponse)
                         }
 
                     }

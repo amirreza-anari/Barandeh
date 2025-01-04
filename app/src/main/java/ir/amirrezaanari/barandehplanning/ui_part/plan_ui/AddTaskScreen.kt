@@ -1,8 +1,10 @@
 package ir.amirrezaanari.barandehplanning.ui_part.plan_ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -68,6 +70,11 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController, select
             .fillMaxSize()
             .background(primary)
             .padding(16.dp)
+            .clickable(
+                onClick = { focusManager.clearFocus()},
+                indication = null, // حذف indicator
+                interactionSource = remember { MutableInteractionSource() },
+            )
     ) {
         Card(
             modifier = Modifier.fillMaxWidth()
@@ -194,7 +201,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController, select
                     contentColor = mainwhite
                 )
             ) {
-                Text(startTime)
+                Text(startTime.toPersianDigits())
             }
 
             if (isStartTimeDialogOpen) {
@@ -275,9 +282,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController, select
                     contentColor = mainwhite
                 )
             ) {
-                Text(
-                    text = endTime,
-                )
+                Text(endTime.toPersianDigits())
             }
 
             if (isEndTimeDialogOpen) {
@@ -369,4 +374,16 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavController, select
             Text("تایید", fontSize = 17.sp)
         }
     }
+}
+
+fun String.toPersianDigits(): String {
+    val englishDigits = '0'..'9'
+    val persianDigits = listOf('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹')
+    return this.map { char ->
+        if (char in englishDigits) {
+            persianDigits[char - '0']
+        } else {
+            char
+        }
+    }.joinToString("")
 }

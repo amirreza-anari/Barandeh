@@ -2,6 +2,9 @@ package ir.amirrezaanari.barandehplanning.api_part
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.UnknownHostException
+import javax.net.ssl.SSLHandshakeException
 
 //@Composable
 //fun ChatApp() {
@@ -111,73 +114,17 @@ import kotlinx.coroutines.withContext
 //
 //}
 
+
+
 suspend fun fetchAIResponse(userMessage: String): String {
     return withContext(Dispatchers.IO) {
         try {
-            val requestBody = RequestBody(
-                model = "gemini-1.5-pro-latest",
-                messages = listOf(
-                    Message("system", "نقش: یک دستیار هوش مصنوعی برای بهینه\u200Cسازی برنامه\u200Cریزی روزانه\n" +
-                            "\n" +
-                            "مأموریت اصلی:\n" +
-                            "- تحلیل دقیق برنامه روزانه کاربر\n" +
-                            "- کشف الگوها و روندهای رفتاری\n" +
-                            "- ارائه راهکارهای عملی برای بهبود مدیریت زمان\n" +
-                            "\n" +
-                            "فرآیند تحلیل:\n" +
-                            "1. مقایسه برنامه از پیش تعیین شده با اجرای واقعی\n" +
-                            "2. محاسبه درصد موفقیت در هر فعالیت\n" +
-                            "3. شناسایی علل انحراف از برنامه\n" +
-                            "4. تحلیل بازه زمانی و کیفیت اجرای هر فعالیت\n" +
-                            "\n" +
-                            "جزئیات تحلیل:\n" +
-                            "- محاسبه زمان دقیق صرف شده برای هر فعالیت\n" +
-                            "- تشخیص فعالیت\u200Cهای موفق و ناموفق\n" +
-                            "- بررسی تأثیر فعالیت\u200Cها بر یکدیگر\n" +
-                            "- شناسایی الگوهای رفتاری مثبت و منفی\n" +
-                            "\n" +
-                            "معیارهای پیشنهاد:\n" +
-                            "- تناسب با شخصیت و سبک زندگی کاربر\n" +
-                            "- قابلیت اجرا در چارچوب زمانی محدود\n" +
-                            "- سادگی و عملی بودن\n" +
-                            "- قابلیت اندازه\u200Cگیری و پیگیری\n" +
-                            "\n" +
-                            "فرمت پاسخ برای پیشنهادات:\n" +
-                            "الف. تحلیل وضعیت فعلی\n" +
-                            "   - درصد موفقیت کلی\n" +
-                            "   - نقاط قوت\n" +
-                            "   - چالش\u200Cهای اصلی\n" +
-                            "\n" +
-                            "ب.پیشنهادات بهبود\n" +
-                            "   1. راهکار اصلی\n" +
-                            "   2. جزئیات اجرایی\n" +
-                            "   3. زمان پیشنهادی\n" +
-                            "   4. روش پیگیری\n" +
-                            "\n" +
-                            "پ.برنامه پیشنهادی\n" +
-                            "   - جدول زمانی دقیق\n" +
-                            "   - اولویت\u200Cبندی فعالیت\u200Cها\n" +
-                            "   - زمان\u200Cبندی منعطف\n" +
-                            "   - پیش\u200Cبینی موانع احتمالی\n" +
-                            "\n" +
-                            "محدودیت\u200Cها و اصول اخلاقی:\n" +
-                            "- حفظ حریم خصوصی کاربر\n" +
-                            "- پرهیز از قضاوت و سرزنش\n" +
-                            "- ارائه پیشنهادات انگیزشی و سازنده\n" +
-                            "- تمرکز بر توانمندسازی کاربر\n" +
-                            "\n" +
-                            "ویژگی\u200Cهای زبانی:\n" +
-                            "- لحن دوستانه و مشوق\n" +
-                            "- استفاده از کلمات انگیزشی\n" +
-                            "- توضیحات شفاف و کوتاه\n" +
-                            "- پرهیز از پیچیدگی\u200Cهای غیرضروری\n"),
-                    Message("user", userMessage)
-                ),
-                temperature = 0.5,
-                max_tokens = 300
+            // Create ProxyRequestBody with the user message and default values
+            val proxyRequestBody = ProxyRequestBody(
+                userInput = userMessage
             )
 
-            val response = RetrofitInstance.api.getResponse(requestBody).execute()
+            val response = RetrofitInstance.api.getResponse(proxyRequestBody).execute()
 
             when {
                 response.isSuccessful -> {
@@ -187,6 +134,12 @@ suspend fun fetchAIResponse(userMessage: String): String {
                 }
                 else -> "خطا در دریافت پاسخ: ${response.errorBody()?.string()}"
             }
+        } catch (e: UnknownHostException) {
+            "اتصال به اینترنت برقرار نیست. لطفاً اتصال اینترنت خود را بررسی کنید."
+        } catch (e: SSLHandshakeException) {
+            "مشکل در اتصال امن به سرور. ممکن است VPN شما فعال باشد."
+        } catch (e: IOException) {
+            "خطا در ارتباط با سرور. لطفاً اتصال اینترنت خود را بررسی کنید."
         } catch (e: Exception) {
             "خطای سیستمی: ${e.localizedMessage}"
         }

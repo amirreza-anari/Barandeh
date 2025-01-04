@@ -59,7 +59,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.navigation.compose)
 //    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.27.0")
-    implementation(libs.twain)
+//    implementation(libs.twain)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.gson)
@@ -67,4 +67,5 @@ dependencies {
     ksp(libs.ksp.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.compose.markdown)
 }
