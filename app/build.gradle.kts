@@ -68,4 +68,8 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.compose.markdown)
+    implementation(libs.generativeai)
+
+    implementation("com.ehsanmsz:msz-progress-indicator:0.8.0")
+
 }

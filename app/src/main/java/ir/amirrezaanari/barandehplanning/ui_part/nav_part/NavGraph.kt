@@ -41,7 +41,7 @@ fun NavigationGraph(
                 )
             }
         ) {
-            AddVoicePTask()
+            TaskPlannerScreen(taskViewModel, navController)
         }
         composable(
             "add_task_screen/{selectedTab}",

@@ -170,7 +170,7 @@ fun PlannerScreen(viewModel: TaskViewModel, navController: NavController){
                     route = "CompletedTaskScreen",
                     enterTransition = {
                         slideIntoContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.Up,
+                            towards = AnimatedContentTransitionScope.SlideDirection.Right,
                             animationSpec = tween(500)
                         )
                     },
@@ -303,15 +303,8 @@ fun TaskPlannerScreen(viewModel: TaskViewModel, navController: NavController) {
             AnimatedContent(
                 targetState = selectedTab,
                 transitionSpec = {
-                    if (targetState == 0) {
-                        fadeIn(animationSpec = tween(500)) togetherWith fadeOut(animationSpec = tween(500))
+                    fadeIn(animationSpec = tween(500)) togetherWith fadeOut(animationSpec = tween(500))
 //                        (fadeIn() + scaleIn(initialScale = 0.5f)).togetherWith(fadeOut())
-
-                    } else {
-                        fadeIn(animationSpec = tween(500)) togetherWith fadeOut(animationSpec = tween(500))
-//                        (fadeIn() + scaleIn(initialScale = 0.5f)).togetherWith(fadeOut())
-
-                    }
                 }, label = "PlansMovementAnimation"
             ) { tab ->
                 when (tab) {

@@ -52,7 +52,7 @@ fun Picker(
     startIndex: Int = 0,
     visibleItemsCount: Int = 3,
     textModifier: Modifier = Modifier,
-    textStyle: TextStyle = LocalTextStyle.current,
+    textStyle: TextStyle,
     dividerColor: Color = LocalContentColor.current,
 ) {
 
