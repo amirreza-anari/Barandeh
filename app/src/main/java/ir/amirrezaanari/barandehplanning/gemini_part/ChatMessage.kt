@@ -28,7 +28,7 @@ data class ChatRequest(
 
 data class ChatHistoryItem(
     val text: String,
-    val participant: String // "USER" یا "MODEL"
+    val participant: String
 )
 
 data class ChatResponse(val response: String)

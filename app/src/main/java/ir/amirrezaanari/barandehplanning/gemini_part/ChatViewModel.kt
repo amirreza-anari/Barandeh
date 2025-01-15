@@ -2,9 +2,6 @@ package ir.amirrezaanari.barandehplanning.gemini_part
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.asTextOrNull
-import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,13 +14,13 @@ import java.util.concurrent.TimeUnit
 class ChatViewModel : ViewModel() {
 
     private val okHttpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS) // زمان انتظار برای اتصال
-        .readTimeout(30, TimeUnit.SECONDS)    // زمان انتظار برای خواندن پاسخ
-        .writeTimeout(30, TimeUnit.SECONDS)   // زمان انتظار برای ارسال درخواست
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("http://anari.freehost.io/") // آدرس سرور واسط
+        .baseUrl("http://anari.freehost.io") // آدرس سرور واسط
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -34,6 +31,7 @@ class ChatViewModel : ViewModel() {
 
     fun sendMessage(userMessage: String) {
         // افزودن پیام کاربر به لیست پیام‌ها
+
         _uiState.value.addMessage(
             ChatMessage(
                 text = userMessage,

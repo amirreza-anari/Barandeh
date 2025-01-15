@@ -63,7 +63,14 @@ fun TimePicker(
                 itemHeight = itemHeight,
                 dividerConfig = dividerConfig,
                 textStyles = textStyles,
-                formatNumber = { toPersianNumber(if (is24TimeFormat) String.format("%02d", it) else it.toString()) },
+                formatNumber = {
+                    toPersianNumber(
+                        if (is24TimeFormat) String.format(
+                            "%02d",
+                            it
+                        ) else it.toString()
+                    )
+                },
                 modifier = Modifier
                     .weight(1f)
                     .height(itemHeight * 5),
@@ -161,7 +168,8 @@ private fun <T> ScrollableNumberPicker(
                     Text(
                         text = formatNumber(item),
                         style = if (index == listState.firstVisibleItemIndex &&
-                            listState.firstVisibleItemScrollOffset == 0)
+                            listState.firstVisibleItemScrollOffset == 0
+                        )
                             textStyles.selectedTextStyle else textStyles.defaultTextStyle
                     )
                 }

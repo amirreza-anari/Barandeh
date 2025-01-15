@@ -1,9 +1,6 @@
 package ir.amirrezaanari.barandehplanning
 
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
@@ -13,8 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -24,7 +21,9 @@ import kotlinx.coroutines.withContext
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun ChatScreen(generativeModel: GenerativeModel) {
+fun ChatScreen(
+    generativeModel: GenerativeModel = viewModel()
+) {
     var userInput by remember { mutableStateOf(TextFieldValue()) }
     var chatHistory by remember { mutableStateOf(listOf<String>()) }
     var responseText by remember { mutableStateOf("Hello! How can I assist you today?") }

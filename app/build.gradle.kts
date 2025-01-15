@@ -71,5 +71,8 @@ dependencies {
     implementation(libs.generativeai)
 
     implementation("com.ehsanmsz:msz-progress-indicator:0.8.0")
+    implementation("com.github.samanzamani:PersianDate:1.7.1")
+    implementation("com.github.hamooo90:jalali-datepicker-compose:1.2.0")
+    implementation("ir.huri:JalaliCalendar:1.3.3")
 
 }

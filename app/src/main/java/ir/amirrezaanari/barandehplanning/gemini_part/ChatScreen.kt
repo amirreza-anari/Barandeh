@@ -24,6 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -37,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -46,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -66,19 +70,29 @@ fun ChatRoute(
     val chatUiState by chatViewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+    val planSent = remember { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = {
-            MessageInput(
-                onSendMessage = { inputText ->
-                    chatViewModel.sendMessage(inputText)
-                },
-                resetScroll = {
-                    coroutineScope.launch {
-                        listState.scrollToItem(0)
+            if (planSent.value){
+                MessageInput(
+                    onSendMessage = { inputText ->
+                        chatViewModel.sendMessage(inputText)
+                    },
+                    resetScroll = {
+                        coroutineScope.launch {
+                            listState.scrollToItem(0)
+                        }
                     }
-                }
-            )
+                )
+            } else {
+                SendPlan(
+                    OnClick = {
+                        chatViewModel.sendMessage("اسم من امیررضا، اول هر پیام اسممو صدا بزن حتما")
+                        planSent.value = true
+                    }
+                )
+            }
         }
     ) { paddingValues ->
         Column(
@@ -109,7 +123,8 @@ fun ChatRoute(
                             imageVector = Icons.Rounded.ArrowForward,
                             contentDescription = "Home Icon",
                             tint = mainwhite,
-                            modifier = Modifier.size(30.dp)
+                            modifier = Modifier
+                                .size(30.dp)
                                 .clickable { navController.popBackStack() }
                         )
                         Box(
@@ -269,7 +284,7 @@ fun MessageInput(
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
 
-            ),
+                ),
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .fillMaxWidth()
@@ -302,4 +317,35 @@ fun MessageInput(
 //    ) {
 //
 //    }
+}
+
+@Composable
+fun SendPlan(
+    OnClick: () -> Unit
+){
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.076f),
+            shape = RoundedCornerShape(25),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = red,
+                contentColor = mainwhite
+            ),
+            onClick = OnClick
+        ) {
+            Text(
+                text = "بزن تا شروع کنیم!",
+                fontSize = 18.sp,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
 }
