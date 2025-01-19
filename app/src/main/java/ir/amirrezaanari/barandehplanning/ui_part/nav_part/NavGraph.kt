@@ -85,7 +85,7 @@ fun NavigationGraph(
                 )
             },
         ) {
-            AiScreen()
+            AiScreen(plannerViewModel)
         }
     }
 }

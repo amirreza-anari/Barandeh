@@ -5,8 +5,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import saman.zamani.persiandate.PersianDate
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class PlannerViewModel(
     private val repository: PlannerRepository
@@ -23,6 +26,43 @@ class PlannerViewModel(
     init {
         // Load tasks for the current date when the ViewModel is created
         loadTasks(_selectedDate.value)
+    }
+
+    suspend fun getLastNDaysStatistics(days: Int): String {
+        val result = StringBuilder()
+        val currentDate = LocalDate.now()
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        for (i in 0 until days) {
+            val date = currentDate.minusDays(i.toLong())
+            val dateString = date.format(dateFormatter)
+
+            val plannedTasks = repository.getPlannedTasksForDate(dateString).first()
+            val completedTasks = repository.getCompletedTasksForDate(dateString).first()
+
+            // تبدیل تاریخ میلادی به شمسی با استفاده از PersianDate
+            val persianDate = PersianDate().apply {
+                setGrgYear(date.year)
+                setGrgMonth(date.monthValue)
+                setGrgDay(date.dayOfMonth)
+            }
+            val jalaliDate = "${persianDate.shYear}/${persianDate.shMonth}/${persianDate.shDay}"
+
+            result.append("$jalaliDate:\n")
+            result.append("برنامه های ریخته شده:\n")
+            plannedTasks.forEach { task ->
+                result.append("${task.title} از ساعت ${task.startTime} تا ${task.endTime}\n")
+            }
+
+            result.append("برنامه های انجام شده:\n")
+            completedTasks.forEach { task ->
+                result.append("${task.title} از ساعت ${task.startTime} تا ${task.endTime}\n")
+            }
+
+            result.append("\n") // فاصله بین روزها
+        }
+
+        return result.toString()
     }
 
     fun copyAllPlannedToCompleted() {

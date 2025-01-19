@@ -1,5 +1,6 @@
 package ir.amirrezaanari.barandehplanning.task_part
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,6 +47,7 @@ import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
 import ir.amirrezaanari.barandehplanning.ui.theme.red
 import ir.amirrezaanari.barandehplanning.ui.theme.secondary
+import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,14 +60,12 @@ fun AddTaskBottomSheet(
     var startTime by remember { mutableStateOf("زمان شروع") }
     var endTime by remember { mutableStateOf("زمان پایان") }
     var details by remember { mutableStateOf("") }
-
     var selectedColor by remember { mutableStateOf(red) }
-
     var isStartTimeDialogOpen by remember { mutableStateOf(false) }
-
     var isEndTimeDialogOpen by remember { mutableStateOf(false) }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val context = LocalContext.current
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -174,6 +175,11 @@ fun AddTaskBottomSheet(
 
             Button(
                 onClick = {
+                    if (title.isBlank() || startTime == "زمان شروع" || endTime == "زمان پایان") {
+                        Toast.makeText(context, "لطفاً عنوان، زمان شروع و زمان پایان را وارد کنید.", Toast.LENGTH_SHORT).show()
+                    } else if (LocalTime.parse(startTime).isAfter(LocalTime.parse(endTime))) {
+                        Toast.makeText(context, "زمان شروع نمی‌تواند بعد از زمان پایان باشد.", Toast.LENGTH_SHORT).show()
+                } else {
                     val newTask = TaskEntity(
                         title = title,
                         startTime = startTime,
@@ -185,6 +191,7 @@ fun AddTaskBottomSheet(
                     )
                     viewModel.addTask(newTask)
                     onDismiss()
+                }
                 },
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
@@ -209,7 +216,8 @@ fun AddTaskBottomSheet(
                 isEndTimeDialogOpen = bool
             },
             headerText = "زمان پایان رو انتخاب کن!",
-            isopen = isEndTimeDialogOpen
+            isopen = isEndTimeDialogOpen,
+            tasktime = LocalTime.now().toString()
         )
         TimePickerDialog(
             onDismissRequest = { isStartTimeDialogOpen = false },
@@ -218,7 +226,9 @@ fun AddTaskBottomSheet(
                 isStartTimeDialogOpen = bool
             },
             headerText = "زمان شروع رو انتخاب کن!",
-            isopen = isStartTimeDialogOpen
+            isopen = isStartTimeDialogOpen,
+            tasktime = LocalTime.now().toString()
+
         )
     }
 }

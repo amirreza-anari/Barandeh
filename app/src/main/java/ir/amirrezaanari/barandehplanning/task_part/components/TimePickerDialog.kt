@@ -36,9 +36,12 @@ fun TimePickerDialog(
     onDismissRequest: () -> Unit,
     headerText: String,
     onClick: (String, Boolean) -> Unit,
+    tasktime: String,
     ){
 
-    var dialogeTime by remember { mutableStateOf(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))) }
+    var dialogeTime by remember {
+        mutableStateOf(LocalTime.parse(tasktime).format(DateTimeFormatter.ofPattern("HH:mm")))
+    }
 
 
     if (isopen){

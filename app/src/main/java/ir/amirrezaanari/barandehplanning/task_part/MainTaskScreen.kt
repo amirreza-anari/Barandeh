@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Button
@@ -30,8 +31,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ir.amirrezaanari.barandehplanning.task_part.components.SectionFilterChip
+import ir.amirrezaanari.barandehplanning.ui.theme.green
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
+import ir.amirrezaanari.barandehplanning.ui.theme.red
 
 @Composable
 fun MainPlannerScreen(viewModel: PlannerViewModel) {
@@ -123,9 +126,10 @@ fun MainPlannerScreen(viewModel: PlannerViewModel) {
                         Button(
                             onClick = { viewModel.copyAllPlannedToCompleted() },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = primary,
+                                containerColor = green,
                                 contentColor = mainwhite
-                            )
+                            ),
+                            shape = RoundedCornerShape(25)
                         ) {
                             Text("کپی برنامه‌های ریخته‌شده به انجام‌شده")
                         }

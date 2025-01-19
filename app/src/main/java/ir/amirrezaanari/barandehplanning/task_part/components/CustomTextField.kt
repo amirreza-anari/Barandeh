@@ -19,10 +19,12 @@ fun CustomTextField(
     modifier: Modifier = Modifier,
     label: String,
     singleline: Boolean,
+    enabled: Boolean = true,
     maxlines: Int = 1
 ) {
     OutlinedTextField(
         modifier = modifier,
+        enabled = enabled,
         value = value,
 //        label = { Text(label) },
         placeholder = { Text(label) },
@@ -44,7 +46,10 @@ fun CustomTextField(
             focusedTextColor = mainwhite,
             focusedLabelColor = mainwhite,
             focusedPlaceholderColor = mainwhite.copy(alpha = 0.8f),
-            cursorColor = mainwhite
+            cursorColor = mainwhite,
+            disabledContainerColor = Color.Transparent,
+            disabledTextColor = mainwhite.copy(alpha = 0.7f),
+            disabledIndicatorColor = Color.Gray
         )
     )
 }

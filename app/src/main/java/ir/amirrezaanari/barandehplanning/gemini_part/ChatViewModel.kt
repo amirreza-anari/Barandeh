@@ -29,7 +29,22 @@ class ChatViewModel : ViewModel() {
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
     private val chatProxyService = retrofit.create(ChatProxyService::class.java)
 
+
+    private fun getFriendlyErrorMessage(e: Exception): String {
+        return when (e) {
+            is java.net.UnknownHostException, is java.net.ConnectException -> "اوه! مثل اینکه اینترنتت قطعه. 📵 یه چک بکن شاید وصل نیستی!"
+            is java.net.SocketTimeoutException -> "این چه سرعتیه؟ 🐢 سرور جوابمون رو نداد. یه بار دیگه امتحان کن!"
+            is retrofit2.HttpException -> when (e.code()) {
+                404 -> "این چی بود کلیک کردی؟ 🕵️‍♂️ صفحه‌ای که می‌خوای وجود نداره!"
+                500 -> "اوه! سرور یه مشکلی داره. 🛠️ یه وقت دیگه سر بزن!"
+                else -> "یه مشکلی پیش اومده. 🌐 کد خطاش: ${e.code()}"
+            }
+            else -> "اوه! یه چیزی اشتباه شد. 😅 یه بار دیگه امتحان کن یا بهمون خبر بده!"
+        }
+    }
+
     fun sendMessage(userMessage: String) {
+
         // افزودن پیام کاربر به لیست پیام‌ها
 
         _uiState.value.addMessage(
@@ -72,9 +87,12 @@ class ChatViewModel : ViewModel() {
             } catch (e: Exception) {
                 // در صورت خطا، پیام خطا را به لیست پیام‌ها اضافه کنید
                 _uiState.value.replaceLastPendingMessage()
+
+                val errorMessage = getFriendlyErrorMessage(e)
+
                 _uiState.value.addMessage(
                     ChatMessage(
-                        text = e.localizedMessage ?: "An error occurred",
+                        text = errorMessage,
                         participant = Participant.ERROR
                     )
                 )

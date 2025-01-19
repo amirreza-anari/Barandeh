@@ -9,13 +9,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import ir.amirrezaanari.barandehplanning.gemini_part.ChatRoute
+import ir.amirrezaanari.barandehplanning.task_part.PlannerViewModel
 
 @Composable
-fun AiScreen(){
+fun AiScreen(viewModel: PlannerViewModel){
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -33,8 +36,14 @@ fun AiScreen(){
                 fadeIn(animationSpec = tween(500))
             }
         ) {
-            composable("home") { AiFirstScreen(navController) }
-            composable("chat") { ChatRoute(navController) }
+            composable("home") { AiFirstScreen(navController,viewModel) }
+            composable(
+                route = "chat/{statistics}", // اضافه کردن آرگومان
+                arguments = listOf(navArgument("statistics") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val statistics = backStackEntry.arguments?.getString("statistics") ?: ""
+                ChatRoute(navController, statistics) // پاس دادن statistics به ChatRoute
+            }
         }
     }
 }

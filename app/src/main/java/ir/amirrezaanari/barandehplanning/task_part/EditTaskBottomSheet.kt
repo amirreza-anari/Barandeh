@@ -1,6 +1,7 @@
 package ir.amirrezaanari.barandehplanning.task_part
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -15,11 +17,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.ColorLens
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material.icons.rounded.Title
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -61,6 +66,7 @@ fun EditTaskBottomSheet(
     var endTime by remember { mutableStateOf(task.endTime) }
     var details by remember { mutableStateOf(task.details) }
     var selectedColor by remember { mutableStateOf(Color(task.color)) }
+    var editEnabled by remember { mutableStateOf(false) }
 
     var isStartTimeDialogOpen by remember { mutableStateOf(false) }
     var isEndTimeDialogOpen by remember { mutableStateOf(false) }
@@ -81,12 +87,32 @@ fun EditTaskBottomSheet(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "ویرایش برنامه",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Black,
-                modifier = Modifier.padding(bottom = 10.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp),
+                contentAlignment = Alignment.Center
+
+            ) {
+                Text(
+                    text = if (editEnabled) "ویرایش برنامه" else "جزئیات برنامه",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Black,
+                )
+                IconButton(
+                    onClick = { editEnabled = true },
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .size(24.dp)
+                        .align(Alignment.CenterEnd)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Edit,
+                        contentDescription = "Edit Icon",
+                        tint = mainwhite,
+                    )
+                }
+            }
 
             IconAndText(
                 icon = Icons.Rounded.Title,
@@ -98,6 +124,7 @@ fun EditTaskBottomSheet(
                 onValueChange = { title = it },
                 label = "عنوان برنامه رو اینجا بنویس :)",
                 singleline = true,
+                enabled = editEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 5.dp),
@@ -118,6 +145,7 @@ fun EditTaskBottomSheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 TimePickerDialogButton(
+                    enabled = editEnabled,
                     modifier = Modifier.weight(2f),
                     onClick = { isStartTimeDialogOpen = true },
                     text = startTime
@@ -129,6 +157,7 @@ fun EditTaskBottomSheet(
                     color = Color.White.copy(alpha = 0.7f)
                 )
                 TimePickerDialogButton(
+                    enabled = editEnabled,
                     modifier = Modifier.weight(2f),
                     onClick = { isEndTimeDialogOpen = true },
                     text = endTime
@@ -150,6 +179,7 @@ fun EditTaskBottomSheet(
                 onValueChange = {
                     details = it
                 },
+                enabled = editEnabled,
                 singleline = false,
                 maxlines = 5
             )
@@ -181,46 +211,39 @@ fun EditTaskBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Button(
-                    onClick = {
-                        val updatedTask = task.copy(
-                            title = title,
-                            startTime = startTime,
-                            endTime = endTime,
-                            details = details,
-                            color = selectedColor.toArgb()
-                        )
-                        viewModel.updateTask(updatedTask)
-                        onDismiss()
-                    },
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(70.dp)
-                        .padding(vertical = 12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = primary,
-                        containerColor = mainwhite
-                    )
-                ) {
-                    Text("ذخیره")
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                if (task.isPlanned){
+                if (editEnabled){
                     Button(
                         onClick = {
-                            val newTask = TaskEntity(
+                            val updatedTask = task.copy(
                                 title = title,
                                 startTime = startTime,
                                 endTime = endTime,
                                 details = details,
-                                color = selectedColor.toArgb(),
-                                isPlanned = false,
-                                date = viewModel.selectedDate.value.toString()
+                                color = selectedColor.toArgb()
                             )
-                            viewModel.addTask(newTask)
+                            viewModel.updateTask(updatedTask)
+                            onDismiss()
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(70.dp)
+                            .padding(vertical = 12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = primary,
+                            containerColor = mainwhite
+                        )
+                    ) {
+                        Text("ذخیره")
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+
+                    Button(
+                        onClick = {
+                            viewModel.deleteTask(task)
+                            onTaskDeleted()
                             onDismiss()
                         },
                         shape = RoundedCornerShape(8.dp),
@@ -230,36 +253,67 @@ fun EditTaskBottomSheet(
                             .padding(vertical = 12.dp),
                         colors = ButtonDefaults.buttonColors(
                             contentColor = mainwhite,
-                            containerColor = green
+                            containerColor = red
                         )
                     ) {
-                        Text("انجام شد!")
+                        Text("حذف")
                     }
+                }
+                else{
+                    Button(
+                        onClick = {
+                            onDismiss()
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(70.dp)
+                            .padding(vertical = 12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = primary,
+                            containerColor = mainwhite
+                        )
+                    ) {
+                        Text("بستن")
+                    }
+
                     Spacer(modifier = Modifier.width(8.dp))
 
-                }
+                    if (task.isPlanned) {
+                        Button(
+                            onClick = {
+                                val newTask = TaskEntity(
+                                    title = title,
+                                    startTime = startTime,
+                                    endTime = endTime,
+                                    details = details,
+                                    color = selectedColor.toArgb(),
+                                    isPlanned = false,
+                                    date = viewModel.selectedDate.value.toString()
+                                )
+                                viewModel.addTask(newTask)
+                                onDismiss()
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(70.dp)
+                                .padding(vertical = 12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = mainwhite,
+                                containerColor = green
+                            )
+                        ) {
+                            Text("انجام شد!")
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                Button(
-                    onClick = {
-                        viewModel.deleteTask(task)
-                        onTaskDeleted()
-                        onDismiss()
-                    },
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(70.dp)
-                        .padding(vertical = 12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = mainwhite,
-                        containerColor = red
-                    )
-                ) {
-                    Text("حذف")
+                    }
                 }
             }
         }
         TimePickerDialog(
+            tasktime = task.endTime,
             onDismissRequest = { isEndTimeDialogOpen = false },
             onClick = { string, bool ->
                 endTime = string
@@ -269,6 +323,7 @@ fun EditTaskBottomSheet(
             isopen = isEndTimeDialogOpen
         )
         TimePickerDialog(
+            tasktime = task.startTime,
             onDismissRequest = { isStartTimeDialogOpen = false },
             onClick = { string, bool ->
                 startTime = string

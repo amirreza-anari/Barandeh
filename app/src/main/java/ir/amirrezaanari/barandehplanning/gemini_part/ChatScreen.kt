@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.ArrowForwardIos
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -65,6 +66,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChatRoute(
     navController: NavHostController,
+    statistics: String,
     chatViewModel: ChatViewModel = viewModel()
 ) {
     val chatUiState by chatViewModel.uiState.collectAsState()
@@ -88,7 +90,7 @@ fun ChatRoute(
             } else {
                 SendPlan(
                     OnClick = {
-                        chatViewModel.sendMessage("اسم من امیررضا، اول هر پیام اسممو صدا بزن حتما")
+                        chatViewModel.sendMessage(statistics)
                         planSent.value = true
                     }
                 )
@@ -120,7 +122,7 @@ fun ChatRoute(
                         horizontalArrangement = Arrangement.Start
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.ArrowForward,
+                            imageVector = Icons.Rounded.ArrowForwardIos,
                             contentDescription = "Home Icon",
                             tint = mainwhite,
                             modifier = Modifier
@@ -279,7 +281,7 @@ fun MessageInput(
         OutlinedTextField(
             value = userMessage,
             label = { Text("پیامتو اینجا بنویس!") },
-            placeholder = { Text("مثلا: چجوری برنامه مو بهتره کنم؟") },
+            placeholder = { Text("چجوری برنامه\u200Cم رو بهتر کنم؟") },
             onValueChange = { userMessage = it },
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,

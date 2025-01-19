@@ -18,8 +18,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -30,17 +33,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import ir.amirrezaanari.barandehplanning.R
+import ir.amirrezaanari.barandehplanning.task_part.PlannerViewModel
 import ir.amirrezaanari.barandehplanning.ui.theme.CustomFontFamily
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.secondary
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
 
 @Composable
-fun AiFirstScreen(navController: NavHostController) {
+fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel) {
 
     val coroutineScope = rememberCoroutineScope()
     val dayPicker = remember { (1..30).map { it.toString().toPersianDigits() } }
     val dayPickerState = rememberPickerState()
+    var statistics by remember { mutableStateOf("") }
 //    val aiPickerState = rememberPickerState()
 
     Column(
@@ -142,7 +148,15 @@ fun AiFirstScreen(navController: NavHostController) {
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            navController.navigate("chat")
+
+                            val selectedDays = dayPickerState.selectedItem.toInt()
+
+                            statistics = viewModel.getLastNDaysStatistics(selectedDays)
+
+                            val encodedStatistics = URLEncoder.encode(statistics, "UTF-8")
+                                .replace("+", "%20")
+
+                            navController.navigate("chat/$encodedStatistics")
                         }
                     },
                     shape = RoundedCornerShape(25),

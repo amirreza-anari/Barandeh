@@ -17,17 +17,21 @@ import ir.amirrezaanari.barandehplanning.ui_part.plan_ui.toPersianDigits
 fun TimePickerDialogButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    text: String
+    text: String,
+    enabled: Boolean = true
 ){
 
     Button(
         modifier = modifier,
+        enabled = enabled,
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, mainwhite.copy(alpha = 0.7f)),
+        border = if (enabled) BorderStroke(1.dp, mainwhite.copy(alpha = 0.7f)) else BorderStroke(1.dp, Color.Gray),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            contentColor = mainwhite
+            contentColor = mainwhite,
+            disabledContentColor = mainwhite.copy(alpha = 0.7f),
+            disabledContainerColor = Color.Transparent
         )
     ) {
         Text(text.toPersianDigits())
