@@ -75,7 +75,7 @@ fun ChatRoute(
 
     Scaffold(
         bottomBar = {
-            if (planSent.value){
+            if (planSent.value || statistics.isBlank()){
                 MessageInput(
                     onSendMessage = { inputText ->
                         chatViewModel.sendMessage(inputText)

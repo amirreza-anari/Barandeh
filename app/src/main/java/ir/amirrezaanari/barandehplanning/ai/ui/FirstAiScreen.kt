@@ -46,7 +46,7 @@ import java.net.URLEncoder
 fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel) {
 
     val coroutineScope = rememberCoroutineScope()
-    val dayPicker = remember { (1..30).map { it.toString().toPersianDigits() } }
+    val dayPicker = remember { (0..30).map { it.toString().toPersianDigits() } }
     val dayPickerState = rememberPickerState()
     var statistics by remember { mutableStateOf("") }
 //    val aiPickerState = rememberPickerState()
@@ -170,7 +170,7 @@ fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel)
                     ),
                 ) {
                     Text(
-                        text = "بزن بریم!",
+                        text = if (dayPickerState.selectedItem.toInt()!=0) "${dayPickerState.selectedItem} روز بزن بریم!" else "چت عمومی",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Black
                     )
