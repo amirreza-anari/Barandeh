@@ -1,5 +1,11 @@
 package ir.amirrezaanari.barandehplanning.planning
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,11 +16,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.CopyAll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -29,7 +37,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import ir.amirrezaanari.barandehplanning.R
 import ir.amirrezaanari.barandehplanning.planning.components.DateSelector
 import ir.amirrezaanari.barandehplanning.planning.components.SectionFilterChip
 import ir.amirrezaanari.barandehplanning.planning.components.TaskItem
@@ -38,6 +49,8 @@ import ir.amirrezaanari.barandehplanning.planning.database.TaskEntity
 import ir.amirrezaanari.barandehplanning.ui.theme.green
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
+import ir.amirrezaanari.barandehplanning.ui.theme.red
+import ir.amirrezaanari.barandehplanning.ui.theme.secondary
 
 @Composable
 fun MainPlannerScreen(viewModel: PlannerViewModel) {
@@ -105,50 +118,107 @@ fun MainPlannerScreen(viewModel: PlannerViewModel) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(5.dp))
-            if (isPlannedSection) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(plannedTasks) { task ->
-                        TaskItem(
-                            task = task,
-                            onTaskClick = {
-                                selectedTask = it
-                                showEditBottomSheet = true
-                            }
-                        )
-                    }
+            Spacer(modifier = Modifier.height(8.dp))
+            AnimatedContent(
+                targetState = isPlannedSection,
+                transitionSpec = {
+                    fadeIn(animationSpec = tween(300)) togetherWith fadeOut(animationSpec = tween(300))
                 }
-            } else {
-                if (completedTasks.isEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Button(
-                            onClick = { viewModel.copyAllPlannedToCompleted() },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = green,
-                                contentColor = mainwhite
-                            ),
-                            shape = RoundedCornerShape(25)
-                        ) {
-                            Text("کپی برنامه‌های ریخته‌شده به انجام‌شده")
+            ) { targetIsPlanned ->
+                if (targetIsPlanned) {
+                    if (plannedTasks.isNotEmpty()){
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            items(plannedTasks) { task ->
+                                TaskItem(
+                                    task = task,
+                                    onTaskClick = {
+                                        selectedTask = it
+                                        showEditBottomSheet = true
+                                    },
+                                    onCheckChange = { taskTick ->
+                                        viewModel.toggleTaskCheckStatus(taskTick)
+                                    }
+                                )
+                            }
+                        }
+                    } else{
+                        Column (
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ){
+                            Image(
+                                painter = painterResource(R.drawable.emptybox),
+                                contentDescription = "empty tasks",
+                                modifier = Modifier.size(230.dp)
+                            )
+                            Spacer(Modifier.height(10.dp))
+                            Text("هیچ برنامه\u200Cی ریخته\u200Cشده\u200Cای نداری! ☹️")
                         }
                     }
                 } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        items(completedTasks) { task ->
-                            TaskItem(
-                                task = task,
-                                onTaskClick = {
-                                    selectedTask = it
-                                    showEditBottomSheet = true
-                                }
+                    if (plannedTasks.isEmpty()){
+                        Column (
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ){
+                            Image(
+                                painter = painterResource(R.drawable.emptybox),
+                                contentDescription = "empty tasks",
+                                modifier = Modifier.size(230.dp)
                             )
+                            Spacer(Modifier.height(10.dp))
+                            Text("هیچ برنامه\u200Cی ریخته\u200Cشده\u200Cای نداری! ☹️")
+                        }
+                    } else{
+                        if (completedTasks.isEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Button(
+                                    onClick = { viewModel.copyAllPlannedToCompleted() },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = green,
+                                        contentColor = primary
+                                    ),
+                                    modifier = Modifier
+                                        .fillMaxWidth(0.8f)
+                                        .height(50.dp),
+                                    shape = RoundedCornerShape(25)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxSize(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Icon(
+                                            Icons.Rounded.CopyAll,
+                                            contentDescription = "copy plannedTasks to completedTasks",
+                                        )
+                                        Spacer(Modifier.width(8.dp))
+                                        Text(
+                                            text = "کپی برنامه‌های ریخته‌شده به انجام‌شده",
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                items(completedTasks) { task ->
+                                    TaskItem(
+                                        task = task,
+                                        onTaskClick = {
+                                            selectedTask = it
+                                            showEditBottomSheet = true
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
                 }

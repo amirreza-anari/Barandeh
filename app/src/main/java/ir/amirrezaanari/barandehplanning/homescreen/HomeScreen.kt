@@ -1,20 +1,28 @@
 package ir.amirrezaanari.barandehplanning.homescreen
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.LocationCity
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.School
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,19 +30,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
-import ir.amirrezaanari.barandehplanning.R
+import ir.amirrezaanari.barandehplanning.planning.components.IconAndText
 import ir.amirrezaanari.barandehplanning.planning.database.PlannerViewModel
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
-import ir.amirrezaanari.barandehplanning.ui.theme.secondary
+import ir.amirrezaanari.barandehplanning.ui.theme.primary
 
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: PlannerViewModel){
@@ -43,18 +50,7 @@ fun HomeScreen(navController: NavHostController, viewModel: PlannerViewModel){
 
     Scaffold(
         topBar = {
-            Box (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.1f),
-                contentAlignment = Alignment.Center
-            ){
-                Text(
-                    text = "به برنده خوش آمدی! 😊",
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Black
-                )
-            }
+            HomeScreenTopAppBar()
         }
     ) { paddingValues ->
 
@@ -74,7 +70,7 @@ fun HomeScreen(navController: NavHostController, viewModel: PlannerViewModel){
                         .padding(bottom = 20.dp),
                     contentAlignment = Alignment.Center
                 ){
-                    Text("\" ${quote} \"", color = Color.LightGray)
+                    Text("\" $quote \"", color = Color.LightGray)
                 }
                 PagesSection(navController)
                 StatsSection(viewModel)
@@ -83,4 +79,132 @@ fun HomeScreen(navController: NavHostController, viewModel: PlannerViewModel){
         }
 
     }
+}
+
+@Composable
+fun HomeScreenTopAppBar(){
+
+    val showInfoDialog = remember { mutableStateOf(false) }
+
+    Box (
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.1f)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.Center
+    ){
+        Text(
+            text = "به برنده خوش آمدی! 😊",
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Black
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            IconButton(
+                onClick = { showInfoDialog.value = true }
+            ) {
+                Icon(
+                    Icons.Rounded.Info,
+                    contentDescription = "App info",
+                    modifier = Modifier.size(30.dp),
+                    tint = mainwhite
+                )
+            }
+        }
+        if (showInfoDialog.value){
+            InfoDialog(
+                onDismissRequest = {
+                    showInfoDialog.value = false
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun InfoDialog(
+    onDismissRequest: () -> Unit,
+){
+
+    Dialog(
+        onDismissRequest = onDismissRequest
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.5f),
+            colors = CardDefaults.cardColors(
+                containerColor = primary
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(15.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = "مشخصات",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 25.sp
+                )
+
+                InfoCombination(
+                    icon = Icons.Rounded.Person,
+                    title = "سازنده",
+                    text = "امیررضا اناری"
+                )
+
+                InfoCombination(
+                    icon = Icons.Rounded.School,
+                    title = "مدرسه",
+                    text = """
+                        هنرستان سمپاد شهید بهشتی
+                        دوره دوم، پایه یازدهم
+                    """.trimIndent()
+                )
+
+                InfoCombination(
+                    icon = Icons.Rounded.LocationCity,
+                    title = "شهر",
+                    text = "بیرجند"
+                )
+
+                Spacer(Modifier.weight(1f))
+
+                Button(
+                    onClick = onDismissRequest,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(25),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = mainwhite
+                    )
+                ) {
+                    Text("باشه")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun InfoCombination(
+    icon: ImageVector,
+    title: String,
+    text: String
+){
+    IconAndText(
+        text = title,
+        icon = icon
+    )
+    Text(
+        text = text,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center
+    )
 }

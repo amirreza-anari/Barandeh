@@ -20,7 +20,7 @@ class ChatViewModel : ViewModel() {
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("http://anari.freehost.io") // آدرس سرور واسط
+        .baseUrl("http://anari.freehost.io")
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -32,20 +32,19 @@ class ChatViewModel : ViewModel() {
 
     private fun getFriendlyErrorMessage(e: Exception): String {
         return when (e) {
-            is java.net.UnknownHostException, is java.net.ConnectException -> "اوه! مثل اینکه اینترنتت قطعه. 📵 یه چک بکن شاید وصل نیستی!"
+            is java.net.UnknownHostException, is java.net.ConnectException -> "اوه! مثل اینکه اینترنتت قطعه. 📵 چک بکن شاید وصل نیستی!"
             is java.net.SocketTimeoutException -> "این چه سرعتیه؟ 🐢 سرور جوابمون رو نداد. یه بار دیگه امتحان کن!"
             is retrofit2.HttpException -> when (e.code()) {
                 404 -> "این چی بود کلیک کردی؟ 🕵️‍♂️ صفحه‌ای که می‌خوای وجود نداره!"
                 500 -> "اوه! سرور یه مشکلی داره. 🛠️ یه وقت دیگه سر بزن!"
                 else -> "یه مشکلی پیش اومده. 🌐 کد خطاش: ${e.code()}"
             }
-            else -> "اوه! یه چیزی اشتباه شد. 😅 یه بار دیگه امتحان کن یا بهمون خبر بده!"
+            else -> "اوه! یه چیزی اشتباه شد. 😅 یه بار دیگه امتحان کن!"
         }
     }
 
     fun sendMessage(userMessage: String) {
 
-        // افزودن پیام کاربر به لیست پیام‌ها
 
         _uiState.value.addMessage(
             ChatMessage(
@@ -57,7 +56,6 @@ class ChatViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // آماده‌سازی تاریخچه چت
                 val chatHistory = _uiState.value.messages.map { message ->
                     ChatHistoryItem(
                         text = message.text,
@@ -65,7 +63,6 @@ class ChatViewModel : ViewModel() {
                     )
                 }
 
-                // ارسال پیام و تاریخچه چت به سرور واسط
                 val response = chatProxyService.sendMessage(
                     ChatRequest(
                         message = userMessage,
@@ -73,10 +70,8 @@ class ChatViewModel : ViewModel() {
                     )
                 )
 
-                // به‌روزرسانی آخرین پیام در حال پردازش
                 _uiState.value.replaceLastPendingMessage()
 
-                // افزودن پاسخ مدل به لیست پیام‌ها
                 _uiState.value.addMessage(
                     ChatMessage(
                         text = response.response,
@@ -85,7 +80,6 @@ class ChatViewModel : ViewModel() {
                     )
                 )
             } catch (e: Exception) {
-                // در صورت خطا، پیام خطا را به لیست پیام‌ها اضافه کنید
                 _uiState.value.replaceLastPendingMessage()
 
                 val errorMessage = getFriendlyErrorMessage(e)

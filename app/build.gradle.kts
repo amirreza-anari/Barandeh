@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -69,10 +70,12 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.compose.markdown)
     implementation(libs.generativeai)
-
-    implementation("com.ehsanmsz:msz-progress-indicator:0.8.0")
-    implementation("com.github.samanzamani:PersianDate:1.7.1")
-    implementation("com.github.hamooo90:jalali-datepicker-compose:1.2.0")
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.msz.progress.indicator)
+    implementation(libs.persiandate)
+    implementation(libs.jalali.datepicker.compose)
     implementation("ir.huri:JalaliCalendar:1.3.3")
+    implementation(libs.persian.material.datepicker)
+    implementation("com.google.accompanist:accompanist-pager:0.36.0")
 
 }

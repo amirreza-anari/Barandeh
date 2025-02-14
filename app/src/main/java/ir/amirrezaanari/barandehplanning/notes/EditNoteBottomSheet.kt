@@ -68,7 +68,7 @@ fun EditNoteBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.78f)
+                .fillMaxHeight(0.7f)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -81,7 +81,7 @@ fun EditNoteBottomSheet(
             )
             IconAndText(
                 icon = Icons.Rounded.Title,
-                text = "عنوان یادداشت"
+                text = "عنوان"
             )
             CustomTextField(
                 modifier = Modifier
@@ -95,12 +95,12 @@ fun EditNoteBottomSheet(
 
             IconAndText(
                 icon = Icons.Rounded.TextFields,
-                text = "متن یادداشت"
+                text = "جزئیات"
             )
             CustomTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
+                    .height(160.dp)
                     .padding(top = 5.dp),
                 value = content,
                 label = "متن جدید را وارد کنید",

@@ -35,6 +35,7 @@ import androidx.navigation.NavHostController
 import ir.amirrezaanari.barandehplanning.R
 import ir.amirrezaanari.barandehplanning.ai.ui.components.Picker
 import ir.amirrezaanari.barandehplanning.ai.ui.components.rememberPickerState
+import ir.amirrezaanari.barandehplanning.planning.components.toPersianDigits
 import ir.amirrezaanari.barandehplanning.planning.database.PlannerViewModel
 import ir.amirrezaanari.barandehplanning.ui.theme.CustomFontFamily
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
@@ -49,7 +50,6 @@ fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel)
     val dayPicker = remember { (0..30).map { it.toString().toPersianDigits() } }
     val dayPickerState = rememberPickerState()
     var statistics by remember { mutableStateOf("") }
-//    val aiPickerState = rememberPickerState()
 
     Column(
         modifier = Modifier
@@ -88,26 +88,6 @@ fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel)
                     )
                 }
             }
-//        Spacer(modifier = Modifier.height(100.dp))
-//
-//        Row(
-//            Modifier
-//                .fillMaxWidth(),
-//            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceAround
-//        ) {
-//            Text("کدوم هوش مصنوعی؟")
-//
-//            AiPicker(
-//                state = aiPickerState,
-//                items = AiModels,
-//                modifier = Modifier
-//                    .height(120.dp)
-//                    .width(140.dp)
-//            )
-//        }
-
-//        Spacer(modifier = Modifier.height(75.dp))
 
             Row(
                 Modifier
@@ -133,7 +113,6 @@ fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel)
                 )
             }
         }
-//        Spacer(Modifier.weight(1f))
 
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -170,7 +149,7 @@ fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel)
                     ),
                 ) {
                     Text(
-                        text = if (dayPickerState.selectedItem.toInt()!=0) "${dayPickerState.selectedItem} روز بزن بریم!" else "چت عمومی",
+                        text = if (dayPickerState.selectedItem.toInt()!=0) "بزن بریم!" else "چت عمومی",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Black
                     )
@@ -178,15 +157,4 @@ fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel)
             }
         }
     }
-}
-fun String.toPersianDigits(): String {
-    val englishDigits = '0'..'9'
-    val persianDigits = listOf('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹')
-    return this.map { char ->
-        if (char in englishDigits) {
-            persianDigits[char - '0']
-        } else {
-            char
-        }
-    }.joinToString("")
 }

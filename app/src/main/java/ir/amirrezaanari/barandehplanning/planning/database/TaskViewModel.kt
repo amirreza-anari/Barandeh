@@ -92,13 +92,18 @@ class PlannerViewModel(
     fun copyAllPlannedToCompleted() {
         viewModelScope.launch {
             val plannedTasks = _plannedTasks.value
-            val completedTasks = plannedTasks.map { task ->
-                task.copy(id = 0, isPlanned = false) // ایجاد یک کپی جدید با `id = 0` و `isPlanned = false`
+            plannedTasks.forEach { task ->
+                if (!task.isChecked) {
+                    val completedTask = task.copy(
+                        id = 0,
+                        isPlanned = false,
+                        parentId = task.id
+                    )
+                    repository.insertTask(completedTask)
+                    repository.updateTask(task.copy(isChecked = true))
+                }
             }
-            completedTasks.forEach { task ->
-                repository.insertTask(task) // ذخیره تسک‌های جدید در دیتابیس
-            }
-            loadTasks(_selectedDate.value) // بارگذاری مجدد تسک‌ها
+            loadTasks(_selectedDate.value)
         }
     }
 
@@ -133,25 +138,48 @@ class PlannerViewModel(
         }
     }
 
+    fun toggleTaskCheckStatus(task: TaskEntity) {
+        viewModelScope.launch {
+            if (task.isPlanned) {
+                if (task.isChecked) {
+                    // حذف کپی از انجام شده‌ها
+                    repository.deleteCompletedCopies(task.id)
+                } else {
+                    // ایجاد کپی در انجام شده‌ها
+                    val completedTask = task.copy(
+                        id = 0,
+                        isPlanned = false,
+                        isChecked = false,
+                        parentId = task.id
+                    )
+                    repository.insertTask(completedTask)
+                }
+                // آپدیت وضعیت تسک اصلی
+                repository.updateTask(task.copy(isChecked = !task.isChecked))
+                loadTasks(_selectedDate.value)
+            }
+        }
+    }
+
+
     private fun loadTasks(date: LocalDate) {
         val dateString = date.toString()
         viewModelScope.launch {
-            try {
-                // Use separate launches to prevent one collection from blocking the other
-                launch {
-                    repository.getPlannedTasksForDate(dateString).collect { tasks ->
-                        _plannedTasks.value = tasks
-                    }
-                }
-                launch {
-                    repository.getCompletedTasksForDate(dateString).collect { tasks ->
-                        _completedTasks.value = tasks
-                    }
-                }
-            } catch (e: Exception) {
-                // Add logging here
-                e.printStackTrace()
+            val plannedTasks = repository.getPlannedTasksForDate(dateString)
+                .first()
+                .sortedBy { it.startTime }
+
+            val completedTasks = repository.getCompletedTasksForDate(dateString)
+                .first()
+                .sortedBy { it.startTime }
+
+            val completedIds = completedTasks.map { it.parentId ?: 0 }.toSet()
+
+            _plannedTasks.value = plannedTasks.map { task ->
+                task.copy(isChecked = completedIds.contains(task.id))
             }
+
+            _completedTasks.value = completedTasks
         }
     }
 }

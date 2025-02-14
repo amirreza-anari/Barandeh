@@ -1,7 +1,9 @@
 [versions]
 agp = "8.7.3"
 composeMarkdown = "0.5.6"
+fragmentKtx = "1.8.5"
 generativeai = "0.9.0"
+jalaliDatepickerCompose = "1.2.0"
 kotlin = "2.1.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -11,20 +13,29 @@ lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.12.01"
 materialIconsExtended = "1.7.6"
+mszProgressIndicator = "0.8.0"
 navigationCompose = "2.8.5"
+persiandate = "1.7.1"
+persianMaterialDatepicker = "1.0.1"
 twain = "0.3.2"
 converterGson = "2.9.0"
 gson = "2.10"
 retrofit = "2.9.0"
 room = "2.6.1"  # اضافه کردن نسخه Room
-ksp = "2.1.0-1.0.29"  # اضافه کردن نسخه KSP
+ksp = "2.1.0-1.0.29"
+appcompat = "1.7.0"  # اضافه کردن نسخه KSP
 
 [libraries]
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
 generativeai = { module = "com.google.ai.client.generativeai:generativeai", version.ref = "generativeai" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+jalali-datepicker-compose = { module = "com.github.hamooo90:jalali-datepicker-compose", version.ref = "jalaliDatepickerCompose" }
+msz-progress-indicator = { module = "com.ehsanmsz:msz-progress-indicator", version.ref = "mszProgressIndicator" }
+persian-material-datepicker = { module = "com.github.M-Erfan-Dm:persian-material-datepicker", version.ref = "persianMaterialDatepicker" }
+persiandate = { module = "com.github.samanzamani:PersianDate", version.ref = "persiandate" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
@@ -44,7 +55,8 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 twain = { module = "com.colintheshots:twain", version.ref = "twain" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }  # اضافه کردن Room runtime
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }  # اضافه کردن Room KTX
-ksp-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }  # اضافه کردن KSP برای Room
+ksp-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }  # اضافه کردن KSP برای Room
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

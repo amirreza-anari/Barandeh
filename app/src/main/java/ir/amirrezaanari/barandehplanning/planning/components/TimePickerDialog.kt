@@ -38,8 +38,14 @@ fun TimePickerDialog(
     tasktime: String,
     ){
 
-    var dialogeTime by remember {
-        mutableStateOf(LocalTime.parse(tasktime).format(DateTimeFormatter.ofPattern("HH:mm")))
+    var currentTime by remember {
+        mutableStateOf(
+            if (tasktime == "زمان شروع" || tasktime == "زمان پایان") {
+                LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
+            } else {
+                LocalTime.parse(tasktime).format(DateTimeFormatter.ofPattern("HH:mm"))
+            }
+        )
     }
 
 
@@ -74,9 +80,9 @@ fun TimePickerDialog(
                     ) {
                         TimePicker(
                             is24TimeFormat = true,
-                            currentTime = LocalTime.now(),
+                            currentTime = LocalTime.parse(currentTime),
                             onTimeChanged = {
-                                dialogeTime = it.toString()
+                                currentTime = it.toString().format(DateTimeFormatter.ofPattern("HH:mm"))
                             },
                         )
                     }
@@ -90,7 +96,7 @@ fun TimePickerDialog(
                             containerColor = mainwhite
                         ),
                         onClick = {
-                            onClick(dialogeTime, false)
+                            onClick(currentTime, false)
                         }
                     ) {
                         Text("تایید")

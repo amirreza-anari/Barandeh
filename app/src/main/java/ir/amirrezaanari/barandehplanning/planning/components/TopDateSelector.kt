@@ -1,5 +1,11 @@
 package ir.amirrezaanari.barandehplanning.planning.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -44,15 +50,6 @@ fun DateSelector(
     // حالت برای کنترل باز یا بسته بودن JalaliDatePicker
     val showDatePicker = remember { mutableStateOf(false) }
 
-    // تبدیل تاریخ میلادی به تاریخ شمسی
-    val persianDate = PersianDate().apply {
-        setGrgYear(selectedDate.year)
-        setGrgMonth(selectedDate.monthValue)
-        setGrgDay(selectedDate.dayOfMonth)
-    }
-
-    val pdFormater = PersianDateFormat("l، j F Y", PersianDateFormat.PersianDateNumberCharacter.FARSI)
-    val formattedDate = pdFormater.format(persianDate)
 
     if (showDatePicker.value) {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -109,11 +106,29 @@ fun DateSelector(
                 )
             }
 
-            Text(
-                text = formattedDate,
-                style = CustomTypography.titleLarge,
-                modifier = Modifier.clickable { showDatePicker.value = true }
-            )
+
+            AnimatedContent(
+                targetState = selectedDate,
+                transitionSpec = {
+                    // مثال با fadeIn و fadeOut؛ می‌توانید از slideIn/slideOut هم استفاده کنید
+                    fadeIn(animationSpec = tween(400)) togetherWith fadeOut(animationSpec = tween(400))
+                }
+            ) { targetDate ->
+                // تبدیل تاریخ میلادی به شمسی
+                val persianDate = PersianDate().apply {
+                    setGrgYear(targetDate.year)
+                    setGrgMonth(targetDate.monthValue)
+                    setGrgDay(targetDate.dayOfMonth)
+                }
+                val pdFormater = PersianDateFormat("l، j F Y", PersianDateFormat.PersianDateNumberCharacter.FARSI)
+                val formattedDate = pdFormater.format(persianDate)
+
+                Text(
+                    text = formattedDate,
+                    style = CustomTypography.titleLarge,
+                    modifier = Modifier.clickable { showDatePicker.value = true }
+                )
+            }
 
             IconButton(
                 onClick = { onDateSelected(selectedDate.plusDays(1)) }

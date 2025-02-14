@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import saman.zamani.persiandate.PersianDate
 import saman.zamani.persiandate.PersianDateFormat
@@ -85,11 +86,12 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
-            noteDao.getAllNotes().collect {
-                _allNotes.value = it
+            noteDao.getAllNotes().collectLatest { list ->
+                _allNotes.emit(list) // مستقیماً مقدار جدید را به StateFlow اختصاص می‌دهد
             }
         }
     }
+
 
     fun addNote(title: String, color: Int, content: String) {
         viewModelScope.launch {

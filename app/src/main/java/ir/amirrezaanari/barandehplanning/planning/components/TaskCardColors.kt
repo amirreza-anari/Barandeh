@@ -32,10 +32,10 @@ data class CardColor(
 val cardColors = listOf(
     CardColor(red),
     CardColor(orange),
-    CardColor(yellow),
+//    CardColor(yellow),
     CardColor(green),
     CardColor(mint),
-    CardColor(teal),
+//    CardColor(teal),
     CardColor(cyan),
     CardColor(blue),
     CardColor(indigo),

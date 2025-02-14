@@ -51,7 +51,7 @@ fun NotesSection() {
         viewModel(factory = NoteViewModelFactory(LocalContext.current.applicationContext as Application))
 
 
-    val notes by viewModel.allNotes.collectAsState()
+    val notes by remember { viewModel.allNotes }.collectAsState()
 
     Column(
         modifier = Modifier
@@ -98,7 +98,7 @@ fun NotesSection() {
                 Spacer(Modifier.height(10.dp))
                 Text("""
                     هیچ یادداشتی نداری!
-                    یدونه بنویس :)
+                    یک دونه بنویس :)
                 """.trimIndent(),
                     textAlign = TextAlign.Center
                 )
