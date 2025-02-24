@@ -36,6 +36,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,27 +74,24 @@ fun ChatRoute(
     val coroutineScope = rememberCoroutineScope()
     val planSent = remember { mutableStateOf(false) }
 
+    if (statistics.isNotBlank()){
+        LaunchedEffect(Unit) {
+            chatViewModel.sendMessage("این برنامه من هست و این رو به خاطر داشته باش که دربارش ازت سوال میپرسم \n $statistics")
+            planSent.value = true
+        }
+    }
     Scaffold(
         bottomBar = {
-            if (planSent.value || statistics.isBlank()){
-                MessageInput(
-                    onSendMessage = { inputText ->
-                        chatViewModel.sendMessage(inputText)
-                    },
-                    resetScroll = {
-                        coroutineScope.launch {
-                            listState.scrollToItem(0)
-                        }
+            MessageInput(
+                onSendMessage = { inputText ->
+                    chatViewModel.sendMessage(inputText)
+                },
+                resetScroll = {
+                    coroutineScope.launch {
+                        listState.scrollToItem(0)
                     }
-                )
-            } else {
-                SendPlan(
-                    OnClick = {
-                        chatViewModel.sendMessage("این برنامه من هست و این رو به خاطر داشته باش که دربارش ازت سوال میپرسم \n $statistics")
-                        planSent.value = true
-                    }
-                )
-            }
+                }
+            )
         }
     ) { paddingValues ->
         Column(
@@ -320,33 +318,33 @@ fun MessageInput(
 //    }
 }
 
-@Composable
-fun SendPlan(
-    OnClick: () -> Unit
-){
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.076f),
-            shape = RoundedCornerShape(25),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = red,
-                contentColor = mainwhite
-            ),
-            onClick = OnClick
-        ) {
-            Text(
-                text = "بزن تا شروع کنیم!",
-                fontSize = 18.sp,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
+//@Composable
+//fun SendPlan(
+//    OnClick: () -> Unit
+//){
+//
+//    Box(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(10.dp),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        Button(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .fillMaxHeight(0.076f),
+//            shape = RoundedCornerShape(25),
+//            colors = ButtonDefaults.buttonColors(
+//                containerColor = red,
+//                contentColor = mainwhite
+//            ),
+//            onClick = OnClick
+//        ) {
+//            Text(
+//                text = "بزن تا شروع کنیم!",
+//                fontSize = 18.sp,
+//                textAlign = TextAlign.Center
+//            )
+//        }
+//    }
+//}

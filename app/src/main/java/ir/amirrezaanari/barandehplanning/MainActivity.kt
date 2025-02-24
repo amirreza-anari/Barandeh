@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ir.amirrezaanari.barandehplanning.onboarding.OnboardingScreen
 import ir.amirrezaanari.barandehplanning.planning.database.PlannerDatabase
 import ir.amirrezaanari.barandehplanning.planning.database.PlannerRepository
 import ir.amirrezaanari.barandehplanning.planning.database.PlannerViewModel
@@ -43,8 +44,14 @@ class MainActivity : ComponentActivity() {
 //                        )
 //                    }
                 ) {
+                    composable("onboarding_screen") {
+                        OnboardingScreen(
+                            navController = mainNavController,
+                            context = this@MainActivity
+                        )
+                    }
                     composable("splash_screen") {
-                        SplashScreen(mainNavController)
+                        SplashScreen(mainNavController, this@MainActivity)
                             }
                     composable("main_screen") {
                         MainScreen(plannerViewModel)

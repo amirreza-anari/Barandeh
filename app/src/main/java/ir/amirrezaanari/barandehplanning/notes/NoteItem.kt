@@ -86,7 +86,8 @@ fun NoteItem(
                 Text(
                     text = note.title,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp
+                    fontSize = 22.sp,
+                    modifier = Modifier.fillMaxWidth(0.9f)
                 )
                 IconButton(
                     onClick = { showEditSheet = true }

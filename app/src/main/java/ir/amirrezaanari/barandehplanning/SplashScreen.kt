@@ -1,5 +1,6 @@
 package ir.amirrezaanari.barandehplanning
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -26,11 +27,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
 import kotlinx.coroutines.delay
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen(navController: NavHostController, context: MainActivity) {
     var isVisibleLogo by remember { mutableStateOf(false) }
     var isVisibleText by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(true) }
@@ -42,9 +44,17 @@ fun SplashScreen(navController: NavController) {
         isVisibleText = true
         delay(1000)
         isLoading = false
-        navController.navigate("main_screen") {
-            popUpTo("splash_screen") { inclusive = true }
-            launchSingleTop = true
+//        navController.navigate("main_screen") {
+//            popUpTo("splash_screen") { inclusive = true }
+//            launchSingleTop = true
+//        }
+        if (onBoardingIsFinished(context = context)) {
+            navController.popBackStack()
+            navController.navigate("main_screen")
+        } else {
+            navController.popBackStack()
+            navController.navigate("onboarding_screen")
+
         }
     }
 
@@ -85,4 +95,10 @@ fun SplashScreen(navController: NavController) {
             }
         }
     }
+}
+
+private fun onBoardingIsFinished(context: MainActivity): Boolean {
+    val sharedPreferences = context.getSharedPreferences("onBoarding", Context.MODE_PRIVATE)
+    return sharedPreferences.getBoolean("isFinished", false)
+
 }
