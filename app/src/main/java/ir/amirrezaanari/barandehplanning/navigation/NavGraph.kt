@@ -11,6 +11,7 @@ import ir.amirrezaanari.barandehplanning.homescreen.HomeScreen
 import ir.amirrezaanari.barandehplanning.homescreen.NotesSection
 import ir.amirrezaanari.barandehplanning.planning.database.PlannerViewModel
 import ir.amirrezaanari.barandehplanning.planning.MainPlannerScreen
+import ir.amirrezaanari.barandehplanning.tools.ToolsScreen
 
 
 @Composable
@@ -22,76 +23,38 @@ fun NavigationGraph(
     NavHost(
         navController = navController,
         startDestination = BottomNavItem.Home.route,
+        enterTransition = {
+            fadeIn(
+                animationSpec = tween(500),
+            )
+        },
+        exitTransition = {
+            fadeOut(
+                animationSpec = tween(500)
+            )
+        }
     ) {
 
         composable(
             BottomNavItem.Home.route,
-            enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(500)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(500)
-                )
-            }
         ) {
-//            NotesSection()
             HomeScreen(navController, viewModel)
         }
 
         composable(
             BottomNavItem.Planning.route,
-            enterTransition = {
-                when(initialState.destination.route){
-                    BottomNavItem.Home.route ->
-                        slideIntoContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                            animationSpec = tween(500)
-                        )
-                    BottomNavItem.AiAssistant.route ->
-                        slideIntoContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                            animationSpec = tween(500)
-                        )
-                    else -> null
-                }
-            },
-            exitTransition = {
-                when(targetState.destination.route){
-                    BottomNavItem.Home.route ->
-                        slideOutOfContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                            animationSpec = tween(500)
-                        )
-                    BottomNavItem.AiAssistant.route ->
-                        slideOutOfContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                            animationSpec = tween(500)
-                        )
-                    else -> null
-                }
-            }
         ) {
             MainPlannerScreen(viewModel)
         }
+
         composable(
-            BottomNavItem.AiAssistant.route,
-            enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(500)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(500)
-                )
-            },
+            BottomNavItem.Tools.route
+        ) {
+            ToolsScreen()
+        }
+
+        composable(
+            BottomNavItem.AiAssistant.route
         ) {
             AiScreen(viewModel)
         }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
@@ -67,12 +68,15 @@ fun HomeScreen(navController: NavHostController, viewModel: PlannerViewModel){
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 20.dp),
+                        .padding(bottom = 25.dp, top = 5.dp),
                     contentAlignment = Alignment.Center
                 ){
-                    Text("\" $quote \"", color = Color.LightGray)
+                    Text(
+                        text = "\"$quote\"", color = Color.LightGray,
+                        textAlign = TextAlign.Center
+                    )
                 }
-                PagesSection(navController)
+//                PagesSection(navController)
                 StatsSection(viewModel)
                 NotesSection()
             }
@@ -134,19 +138,19 @@ fun InfoDialog(
     ) {
         Card(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.5f),
+                .fillMaxWidth(),
             colors = CardDefaults.cardColors(
                 containerColor = primary
             )
         ) {
-            Column(
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                item {
                 Text(
                     text = "مشخصات",
                     fontWeight = FontWeight.Bold,
@@ -173,9 +177,8 @@ fun InfoDialog(
                     title = "شهر",
                     text = "بیرجند"
                 )
-
-                Spacer(Modifier.weight(1f))
-
+                }
+                item {
                 Button(
                     onClick = onDismissRequest,
                     modifier = Modifier
@@ -186,6 +189,7 @@ fun InfoDialog(
                     )
                 ) {
                     Text("باشه")
+                }
                 }
             }
         }
@@ -202,6 +206,7 @@ fun InfoCombination(
         text = title,
         icon = icon
     )
+    Spacer(modifier = Modifier.height(10.dp))
     Text(
         text = text,
         fontWeight = FontWeight.Bold,

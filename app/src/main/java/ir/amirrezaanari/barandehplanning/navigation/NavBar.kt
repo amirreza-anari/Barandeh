@@ -1,6 +1,7 @@
 package ir.amirrezaanari.barandehplanning.navigation
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -23,6 +25,7 @@ fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Planning,
+        BottomNavItem.Tools,
         BottomNavItem.AiAssistant,
     )
 
@@ -43,7 +46,8 @@ fun BottomNavigationBar(navController: NavHostController) {
                 icon = {
                     Image(
                         painter = painterResource(if (isSelected) item.iconSelected else item.icon),
-                        contentDescription = item.title
+                        contentDescription = item.title,
+                        modifier = Modifier.size(24.dp)
                     )
                 },
                 label = {
@@ -56,7 +60,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 selected = isSelected,
                 onClick = {
                     navController.navigate(item.route) {
-//                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
                     }

@@ -55,8 +55,7 @@ fun NotesSection() {
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
+            .fillMaxSize()
             .padding(top = 10.dp)
     ) {
         Row(

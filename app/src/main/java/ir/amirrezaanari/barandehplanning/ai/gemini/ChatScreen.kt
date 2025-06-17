@@ -66,18 +66,23 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChatRoute(
     navController: NavHostController,
-    statistics: String,
+    prompt: String, // ۱. پرامپت سیستمی را دریافت می‌کند
+    stats: String,  // ۲. آمار را هم دریافت می‌کند
     chatViewModel: ChatViewModel = viewModel()
 ) {
     val chatUiState by chatViewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    val planSent = remember { mutableStateOf(false) }
 
-    if (statistics.isNotBlank()){
-        LaunchedEffect(Unit) {
-            chatViewModel.sendMessage("این برنامه من هست و این رو به خاطر داشته باش که دربارش ازت سوال میپرسم \n $statistics")
-            planSent.value = true
+    LaunchedEffect(key1 = prompt) {
+        chatViewModel.setSystemPrompt(prompt)
+    }
+
+    // مکانیزم دوم: ارسال پیام اولیه خودکار (فقط اگر آمار وجود داشته باشد)
+    LaunchedEffect(key1 = stats) {
+        if (stats.isNotBlank()) {
+            val initialMessage = "این برنامه من هست و این رو به خاطر داشته باش که دربارش ازت سوال میپرسم \n $stats"
+            chatViewModel.sendMessage(initialMessage)
         }
     }
     Scaffold(

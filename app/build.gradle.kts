@@ -77,5 +77,7 @@ dependencies {
     implementation("ir.huri:JalaliCalendar:1.3.3")
     implementation(libs.persian.material.datepicker)
     implementation("com.google.accompanist:accompanist-pager:0.36.0")
+    implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.12.0")
+    implementation("org.minidns:minidns-hla:1.1.1")
 
 }

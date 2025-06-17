@@ -9,21 +9,28 @@ sealed class BottomNavItem(
     val title: String
 ) {
 
-    object Home : BottomNavItem(
+    data object Home : BottomNavItem(
         "home",
         R.drawable.home,
         R.drawable.home_selected,
         "خانه"
     )
 
-    object Planning: BottomNavItem(
+    data object Planning: BottomNavItem(
         route = "planning",
         icon = R.drawable.planning,
         iconSelected = R.drawable.planning_selected,
         title = "برنامه ریزی"
     )
 
-    object AiAssistant : BottomNavItem(
+    data object Tools: BottomNavItem(
+        route = "tools",
+        icon = R.drawable.tools,
+        iconSelected = R.drawable.tools_selected,
+        title = "ابزارها"
+    )
+
+    data object AiAssistant : BottomNavItem(
         "aiassistant",
         R.drawable.ai,
         R.drawable.ai_selected,
