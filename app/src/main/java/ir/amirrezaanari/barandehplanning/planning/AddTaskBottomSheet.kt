@@ -9,16 +9,22 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.ColorLens
+import androidx.compose.material.icons.rounded.LocationCity
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.School
 import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material.icons.rounded.Title
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -37,6 +43,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import ir.amirrezaanari.barandehplanning.homescreen.InfoCombination
 import ir.amirrezaanari.barandehplanning.planning.components.CardColorPicker
 import ir.amirrezaanari.barandehplanning.planning.components.CustomTextField
 import ir.amirrezaanari.barandehplanning.planning.components.IconAndText
@@ -78,7 +86,6 @@ fun AddTaskBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.78f)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -103,7 +110,7 @@ fun AddTaskBottomSheet(
                 singleline = true
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             IconAndText(
                 icon = Icons.Rounded.AccessTime,
@@ -173,27 +180,28 @@ fun AddTaskBottomSheet(
             }
 
 
-            Spacer(modifier = Modifier.weight(1f))
 
             Button(
                 onClick = {
                     if (title.isBlank() || startTime == "زمان شروع" || endTime == "زمان پایان") {
-                        Toast.makeText(context, "لطفاً عنوان، زمان شروع و زمان پایان را وارد کنید.", Toast.LENGTH_SHORT).show()
-                    } else if (LocalTime.parse(startTime).isAfter(LocalTime.parse(endTime))) {
-                        Toast.makeText(context, "زمان شروع نمی‌تواند بعد از زمان پایان باشد.", Toast.LENGTH_SHORT).show()
-                } else {
-                    val newTask = TaskEntity(
-                        title = title,
-                        startTime = startTime,
-                        endTime = endTime,
-                        details = details,
-                        color = selectedColor.toArgb(),
-                        isPlanned = isPlanned,
-                        date = viewModel.selectedDate.value.toString()
-                    )
-                    viewModel.addTask(newTask)
-                    onDismiss()
-                }
+                        Toast.makeText(
+                            context,
+                            "لطفاً عنوان، زمان شروع و زمان پایان را وارد کنید.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        val newTask = TaskEntity(
+                            title = title,
+                            startTime = startTime,
+                            endTime = endTime,
+                            details = details,
+                            color = selectedColor.toArgb(),
+                            isPlanned = isPlanned,
+                            date = viewModel.selectedDate.value.toString()
+                        )
+                        viewModel.addTask(newTask)
+                        onDismiss()
+                    }
                 },
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
@@ -234,3 +242,4 @@ fun AddTaskBottomSheet(
         )
     }
 }
+

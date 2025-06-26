@@ -38,7 +38,7 @@ fun NavigationGraph(
         composable(
             BottomNavItem.Home.route,
         ) {
-            HomeScreen(navController, viewModel)
+            HomeScreen(viewModel)
         }
 
         composable(

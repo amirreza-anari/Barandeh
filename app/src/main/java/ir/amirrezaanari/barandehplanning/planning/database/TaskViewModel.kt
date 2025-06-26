@@ -1,26 +1,45 @@
 package ir.amirrezaanari.barandehplanning.planning.database
 
+import android.util.Log
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+// --- Import های جدید برای Gemini ---
+import ir.amirrezaanari.barandehplanning.planning.GeminiResponse
+import ir.amirrezaanari.barandehplanning.planning.RetrofitInstance
+import ir.amirrezaanari.barandehplanning.planning.TaskItem
+import ir.amirrezaanari.barandehplanning.planning.VoiceRequest
+import ir.amirrezaanari.barandehplanning.planning.voicetask.VoiceProcessingState
+// --- Import های تم شما ---
+import ir.amirrezaanari.barandehplanning.ui.theme.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import saman.zamani.persiandate.PersianDate
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.*
 
-/**
- * [PlannerViewModel] is a ViewModel responsible for managing the UI-related data and logic
- * for the planner screen. It interacts with the [PlannerRepository] to fetch, insert, update,
- * and delete tasks. It also handles date selection and loading tasks for a specific date.
- *
- * @property repository The [PlannerRepository] used to interact with the underlying data source.
- */
 class PlannerViewModel(
     private val repository: PlannerRepository
 ) : ViewModel() {
+
+    private val taskColors: List<Color> = listOf(
+        red, orange, green, mint, cyan, blue, indigo, purple, pink, brown
+    )
+
+    // --- State Management for Voice Processing ---
+    private val _voiceProcessingState = MutableStateFlow<VoiceProcessingState>(VoiceProcessingState.Idle)
+    val voiceProcessingState: StateFlow<VoiceProcessingState> = _voiceProcessingState.asStateFlow()
+
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate
 
@@ -37,9 +56,7 @@ class PlannerViewModel(
     val totalCompletedTasks: StateFlow<Int> = _totalCompletedTasks
 
     init {
-        // Load tasks for the current date when the ViewModel is created
         loadTasks(_selectedDate.value)
-
         viewModelScope.launch {
             repository.getTotalPlannedTasks().collect {
                 _totalPlannedTasks.value = it
@@ -51,6 +68,86 @@ class PlannerViewModel(
             }
         }
     }
+
+    // --- START: بلوک کد جدید برای سرویس Gemini ---
+
+    /**
+     * Resets the voice processing state back to Idle. Called from the UI when the error dialog is dismissed.
+     */
+    fun resetVoiceProcessingState() {
+        _voiceProcessingState.value = VoiceProcessingState.Idle
+    }
+
+    /**
+     * Public function to be called from the UI to start processing the recognized text via Gemini.
+     * @param text The voice command recognized by the Speech-to-Text engine.
+     */
+    fun processVoiceCommand(text: String) {
+        if (text.isBlank() || text.startsWith("خطا")) {
+            _voiceProcessingState.value = VoiceProcessingState.Error("لطفاً یک دستور معتبر بگویید.")
+            return
+        }
+        _voiceProcessingState.value = VoiceProcessingState.Loading
+        sendToGeminiWorker(text)
+    }
+
+    private fun sendToGeminiWorker(text: String) {
+        val apiService = RetrofitInstance.api
+        val request = VoiceRequest(text = text)
+
+        apiService.getTasksFromText(request).enqueue(object : Callback<GeminiResponse> {
+            override fun onResponse(call: Call<GeminiResponse>, response: Response<GeminiResponse>) {
+                if (response.isSuccessful) {
+                    val geminiResponse = response.body()
+                    if (geminiResponse != null && geminiResponse.tasks.isNotEmpty()) {
+                        // Loop through the list of tasks from Gemini and add each one
+                        geminiResponse.tasks.forEach { taskItem ->
+                            createAndAddTask(taskItem)
+                        }
+                        _voiceProcessingState.value = VoiceProcessingState.Idle // Success
+                    } else {
+                        _voiceProcessingState.value = VoiceProcessingState.Error("وظیفه‌ای در متن شما پیدا نشد یا پاسخ سرور نامعتبر بود.")
+                    }
+                } else {
+                    Log.e("PlannerViewModel", "API Error: ${response.code()} - ${response.errorBody()?.string()}")
+                    _voiceProcessingState.value = VoiceProcessingState.Error("خطا در پردازش درخواست (${response.code()})")
+                }
+            }
+
+            override fun onFailure(call: Call<GeminiResponse>, t: Throwable) {
+                Log.e("PlannerViewModel", "Network Failure", t)
+                _voiceProcessingState.value = VoiceProcessingState.Error("مشکل در اتصال به شبکه: ${t.message}")
+            }
+        })
+    }
+
+    /**
+     * Creates a TaskEntity from the structured data received from Gemini and calls the main addTask function.
+     */
+    private fun createAndAddTask(taskItem: TaskItem) {
+        // Validate that essential fields are not empty before creating a task
+        if (taskItem.task_name.isNotBlank() && taskItem.start_time.isNotBlank() && taskItem.end_time.isNotBlank()) {
+            val newTask = TaskEntity(
+                date = _selectedDate.value.toString(),
+                title = taskItem.task_name,
+                startTime = taskItem.start_time,
+                endTime = taskItem.end_time,
+                details = "",
+                color = 0, // Let the main addTask handle color assignment
+                isPlanned = true,
+                isChecked = false,
+                parentId = null
+            )
+            addTask(newTask) // Use your existing addTask function which already handles random colors
+        } else {
+            Log.w("PlannerViewModel", "Skipping task creation due to blank fields: $taskItem")
+        }
+    }
+
+    // --- END: بلوک کد جدید برای سرویس Gemini ---
+
+
+    // --- توابع موجود شما (بدون تغییر) ---
 
     suspend fun getLastNDaysStatistics(days: Int): String {
         val result = StringBuilder()
@@ -64,7 +161,6 @@ class PlannerViewModel(
             val plannedTasks = repository.getPlannedTasksForDate(dateString).first()
             val completedTasks = repository.getCompletedTasksForDate(dateString).first()
 
-            // تبدیل تاریخ میلادی به شمسی با استفاده از PersianDate
             val persianDate = PersianDate().apply {
                 setGrgYear(date.year)
                 setGrgMonth(date.monthValue)
@@ -77,15 +173,12 @@ class PlannerViewModel(
             plannedTasks.forEach { task ->
                 result.append("${task.title} از ساعت ${task.startTime} تا ${task.endTime}\n")
             }
-
             result.append("برنامه های انجام شده:\n")
             completedTasks.forEach { task ->
                 result.append("${task.title} از ساعت ${task.startTime} تا ${task.endTime}\n")
             }
-
-            result.append("\n") // فاصله بین روزها
+            result.append("\n")
         }
-
         return result.toString()
     }
 
@@ -116,10 +209,13 @@ class PlannerViewModel(
 
     fun addTask(task: TaskEntity) {
         viewModelScope.launch {
-            repository.insertTask(task)
-            // Also insert the date if it doesn't exist
-            repository.insertDate(DateEntity(task.date))
-            // Reload tasks for the current date
+            val taskWithColor = if (task.color == 0) {
+                task.copy(color = taskColors.random().toArgb())
+            } else {
+                task
+            }
+            repository.insertTask(taskWithColor)
+            repository.insertDate(DateEntity(taskWithColor.date))
             loadTasks(_selectedDate.value)
         }
     }
@@ -127,14 +223,14 @@ class PlannerViewModel(
     fun updateTask(task: TaskEntity) {
         viewModelScope.launch {
             repository.updateTask(task)
-            loadTasks(_selectedDate.value) // Reload tasks after update
+            loadTasks(_selectedDate.value)
         }
     }
 
     fun deleteTask(task: TaskEntity) {
         viewModelScope.launch {
             repository.deleteTask(task)
-            loadTasks(_selectedDate.value) // Reload tasks after deletion
+            loadTasks(_selectedDate.value)
         }
     }
 
@@ -142,10 +238,8 @@ class PlannerViewModel(
         viewModelScope.launch {
             if (task.isPlanned) {
                 if (task.isChecked) {
-                    // حذف کپی از انجام شده‌ها
                     repository.deleteCompletedCopies(task.id)
                 } else {
-                    // ایجاد کپی در انجام شده‌ها
                     val completedTask = task.copy(
                         id = 0,
                         isPlanned = false,
@@ -154,13 +248,11 @@ class PlannerViewModel(
                     )
                     repository.insertTask(completedTask)
                 }
-                // آپدیت وضعیت تسک اصلی
                 repository.updateTask(task.copy(isChecked = !task.isChecked))
                 loadTasks(_selectedDate.value)
             }
         }
     }
-
 
     private fun loadTasks(date: LocalDate) {
         val dateString = date.toString()

@@ -1,6 +1,7 @@
 package ir.amirrezaanari.barandehplanning.planning.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -30,9 +31,9 @@ fun SectionFilterChip(
         label = {
             Text(
                 text = label,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().basicMarquee(),
                 textAlign = TextAlign.Center,
-                fontSize = 15.sp
+                fontSize = 14.sp
 
             )
         },

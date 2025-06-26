@@ -45,7 +45,7 @@ import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
 
 @Composable
-fun HomeScreen(navController: NavHostController, viewModel: PlannerViewModel){
+fun HomeScreen(viewModel: PlannerViewModel) {
 
     val quote = remember { getMotivationalQuote() }
 
@@ -64,13 +64,13 @@ fun HomeScreen(navController: NavHostController, viewModel: PlannerViewModel){
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
-            ){
+            ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 25.dp, top = 5.dp),
                     contentAlignment = Alignment.Center
-                ){
+                ) {
                     Text(
                         text = "\"$quote\"", color = Color.LightGray,
                         textAlign = TextAlign.Center
@@ -78,6 +78,7 @@ fun HomeScreen(navController: NavHostController, viewModel: PlannerViewModel){
                 }
 //                PagesSection(navController)
                 StatsSection(viewModel)
+                Spacer(Modifier.height(10.dp))
                 NotesSection()
             }
         }
@@ -86,25 +87,24 @@ fun HomeScreen(navController: NavHostController, viewModel: PlannerViewModel){
 }
 
 @Composable
-fun HomeScreenTopAppBar(){
+fun HomeScreenTopAppBar() {
 
     val showInfoDialog = remember { mutableStateOf(false) }
 
-    Box (
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.1f)
-            .padding(horizontal = 16.dp),
+            .padding(16.dp),
         contentAlignment = Alignment.Center
-    ){
+    ) {
         Text(
-            text = "به برنده خوش آمدی! 😊",
+            text = "به برنده خوش آمدی!",
             fontSize = 25.sp,
             fontWeight = FontWeight.Black
         )
         Box(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
             IconButton(
@@ -118,7 +118,7 @@ fun HomeScreenTopAppBar(){
                 )
             }
         }
-        if (showInfoDialog.value){
+        if (showInfoDialog.value) {
             InfoDialog(
                 onDismissRequest = {
                     showInfoDialog.value = false
@@ -131,7 +131,7 @@ fun HomeScreenTopAppBar(){
 @Composable
 fun InfoDialog(
     onDismissRequest: () -> Unit,
-){
+) {
 
     Dialog(
         onDismissRequest = onDismissRequest
@@ -151,45 +151,45 @@ fun InfoDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 item {
-                Text(
-                    text = "مشخصات",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 25.sp
-                )
+                    Text(
+                        text = "مشخصات",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 25.sp
+                    )
 
-                InfoCombination(
-                    icon = Icons.Rounded.Person,
-                    title = "سازنده",
-                    text = "امیررضا اناری"
-                )
+                    InfoCombination(
+                        icon = Icons.Rounded.Person,
+                        title = "سازنده",
+                        text = "امیررضا اناری"
+                    )
 
-                InfoCombination(
-                    icon = Icons.Rounded.School,
-                    title = "مدرسه",
-                    text = """
+                    InfoCombination(
+                        icon = Icons.Rounded.School,
+                        title = "مدرسه",
+                        text = """
                         هنرستان سمپاد شهید بهشتی
                         دوره دوم، پایه یازدهم
                     """.trimIndent()
-                )
+                    )
 
-                InfoCombination(
-                    icon = Icons.Rounded.LocationCity,
-                    title = "شهر",
-                    text = "بیرجند"
-                )
+                    InfoCombination(
+                        icon = Icons.Rounded.LocationCity,
+                        title = "شهر",
+                        text = "بیرجند"
+                    )
                 }
                 item {
-                Button(
-                    onClick = onDismissRequest,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(25),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = mainwhite
-                    )
-                ) {
-                    Text("باشه")
-                }
+                    Button(
+                        onClick = onDismissRequest,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(25),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = mainwhite
+                        )
+                    ) {
+                        Text("باشه")
+                    }
                 }
             }
         }
@@ -201,7 +201,7 @@ fun InfoCombination(
     icon: ImageVector,
     title: String,
     text: String
-){
+) {
     IconAndText(
         text = title,
         icon = icon

@@ -1,5 +1,6 @@
 package ir.amirrezaanari.barandehplanning.planning.voicetask
 
+// ... (imports remain the same)
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -12,10 +13,12 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 
 class SpeechToTextConverter(private val context: Context, private val onRecognitionListener: onRecognitionListener) {
+    // ... (properties remain the same)
     private val TAG_RECOGNITION = "SpeechRecognitionTag"
     private val speechRecognizer: SpeechRecognizer =
         SpeechRecognizer.createSpeechRecognizer(context)
 
+    // ... (recognitionListener remains the same)
     private val recognitionListener: RecognitionListener = object : RecognitionListener {
         override fun onReadyForSpeech(params: Bundle?) {
             onRecognitionListener.onReadyForSpeech()
@@ -68,6 +71,7 @@ class SpeechToTextConverter(private val context: Context, private val onRecognit
         override fun onEvent(eventType: Int, params: Bundle?) {}
     }
 
+
     fun startListening(language: String) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
             != PackageManager.PERMISSION_GRANTED
@@ -87,5 +91,10 @@ class SpeechToTextConverter(private val context: Context, private val onRecognit
 
     fun stopListening() {
         speechRecognizer.stopListening()
+    }
+
+    // متد جدید برای آزادسازی منابع
+    fun destroy() {
+        speechRecognizer.destroy()
     }
 }

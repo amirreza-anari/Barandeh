@@ -33,16 +33,6 @@ class MainActivity : ComponentActivity() {
                 NavHost(
                     navController = mainNavController,
                     startDestination = "splash_screen",
-//                    enterTransition = {
-//                        fadeIn(
-//                            animationSpec = tween(1000)
-//                        )
-//                    },
-//                    exitTransition = {
-//                        fadeOut(
-//                            animationSpec = tween(1000)
-//                        )
-//                    }
                 ) {
                     composable("onboarding_screen") {
                         OnboardingScreen(

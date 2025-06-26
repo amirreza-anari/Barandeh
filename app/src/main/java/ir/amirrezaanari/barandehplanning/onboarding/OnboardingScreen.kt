@@ -32,12 +32,11 @@ import ir.amirrezaanari.barandehplanning.R
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
 import kotlinx.coroutines.launch
+import androidx.core.content.edit
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnboardingScreen(navController: NavHostController, context: MainActivity) {
     val pagerState = rememberPagerState(pageCount = { pages.size })
-    val scope = rememberCoroutineScope()
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Column(
@@ -45,7 +44,7 @@ fun OnboardingScreen(navController: NavHostController, context: MainActivity) {
                 .fillMaxSize()
                 .background(primary),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+            verticalArrangement = Arrangement.Center
         ) {
             HorizontalPager(
                 state = pagerState,
@@ -103,7 +102,6 @@ fun IndicatorDot(isSelected: Boolean) {
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ButtonsSection(
     pagerState: PagerState,
@@ -116,8 +114,7 @@ fun ButtonsSection(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(110.dp)
-            .padding(30.dp)
+            .padding(bottom = 30.dp, start = 30.dp, end = 30.dp)
     ) {
         if (pagerState.currentPage != pages.size - 1) {
             if (pagerState.currentPage != 0) {
@@ -131,7 +128,6 @@ fun ButtonsSection(
                         }
                     },
                     modifier = Modifier
-                        .width(100.dp)
                         .align(Alignment.CenterStart),
                     shape = RoundedCornerShape(25),
                     colors = ButtonDefaults.buttonColors(
@@ -184,7 +180,6 @@ fun ButtonsSection(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight()
                     .align(Alignment.BottomCenter),
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = mainwhite,
@@ -209,7 +204,7 @@ fun OnboardingPageContent(page: OnboardingPage) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(26.dp),
+                .padding(15.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -217,19 +212,18 @@ fun OnboardingPageContent(page: OnboardingPage) {
                 painter = painterResource(id = page.image),
                 contentDescription = "onboarding main picture",
                 modifier = Modifier
-                    .size(330.dp)
+                    .fillMaxWidth(0.85f)
             )
-
+            Spacer(Modifier.height(50.dp))
             Text(
                 text = page.title,
                 textAlign = TextAlign.Center,
                 fontSize = 25.sp,
                 lineHeight = 30.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 30.dp, top = 50.dp),
                 color = mainwhite
             )
-
+            Spacer(Modifier.height(30.dp))
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -239,7 +233,7 @@ fun OnboardingPageContent(page: OnboardingPage) {
                         text = page.description,
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
-                        fontSize = 17.sp,
+                        fontSize = 18.sp,
                         color = mainwhite
                     )
                 }
@@ -250,7 +244,7 @@ fun OnboardingPageContent(page: OnboardingPage) {
 
 private fun onBoardingIsFinished(context: Context) {
     val sharedPreferences = context.getSharedPreferences("onBoarding", Context.MODE_PRIVATE)
-    val editor = sharedPreferences.edit()
-    editor.putBoolean("isFinished", true)
-    editor.apply()
+    sharedPreferences.edit {
+        putBoolean("isFinished", true)
+    }
 }

@@ -87,7 +87,6 @@ fun StatCard(
                 fontSize = 35.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
-                    .offset(y = 8.dp)
             )
 
             Text(text, fontSize = 15.sp)

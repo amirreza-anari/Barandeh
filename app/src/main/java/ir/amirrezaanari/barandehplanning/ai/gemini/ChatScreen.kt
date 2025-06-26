@@ -23,6 +23,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
+import androidx.compose.material.icons.automirrored.rounded.ArrowForwardIos
 import androidx.compose.material.icons.rounded.ArrowForwardIos
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -124,18 +127,18 @@ fun ChatRoute(
                         horizontalArrangement = Arrangement.Start
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.ArrowForwardIos,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBackIos,
                             contentDescription = "Home Icon",
                             tint = mainwhite,
                             modifier = Modifier
-                                .size(30.dp)
+                                .fillMaxHeight()
                                 .clickable { navController.popBackStack() }
                         )
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("هوشیار", fontSize = 20.sp)
+                            Text("هوشیار", fontSize = 23.sp)
                         }
                     }
                 }
@@ -189,14 +192,14 @@ fun ChatBubbleItem(
 
     val senderName = when (chatMessage.participant) {
         Participant.MODEL -> "هوشیار"
-        Participant.USER -> "کاربر"
+        Participant.USER -> "شما"
         Participant.ERROR -> "خطا"
     }
 
     Column(
         horizontalAlignment = horizontalAlignment,
         modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .padding(8.dp)
             .fillMaxWidth()
     ) {
         Text(

@@ -68,7 +68,6 @@ fun AddNoteBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.7f)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -77,16 +76,16 @@ fun AddNoteBottomSheet(
                 text = "افزودن یادداشت",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Black,
-                modifier = Modifier.padding(bottom = 10.dp)
             )
+            Spacer(Modifier.height(10.dp))
             IconAndText(
                 icon = Icons.Rounded.Title,
                 text = "عنوان"
             )
+            Spacer(Modifier.height(5.dp))
             CustomTextField(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 5.dp),
+                    .fillMaxWidth(),
                 value = title,
                 label = "عنوان یادداشتت رو اینجا بنویس :)",
                 onValueChange = { title = it },
@@ -97,11 +96,11 @@ fun AddNoteBottomSheet(
                 icon = Icons.Rounded.TextFields,
                 text = "جزئیات"
             )
+            Spacer(Modifier.height(5.dp))
             CustomTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp)
-                    .padding(top = 5.dp),
+                    .height(200.dp),
                 value = content,
                 label = "متن یادداشتت رو اینجا بنویس!",
                 onValueChange = {
@@ -130,7 +129,6 @@ fun AddNoteBottomSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
 
             Button(
                 onClick = {

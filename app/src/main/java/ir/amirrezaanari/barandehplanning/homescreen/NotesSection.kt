@@ -56,7 +56,6 @@ fun NotesSection() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 10.dp)
     ) {
         Row(
             modifier = Modifier
@@ -92,7 +91,7 @@ fun NotesSection() {
                 Image(
                     painter = painterResource(R.drawable.emptynote),
                     contentDescription = "no note",
-                    modifier = Modifier.width(150.dp)
+                    modifier = Modifier.fillMaxWidth(0.5f)
                 )
                 Spacer(Modifier.height(10.dp))
                 Text("""

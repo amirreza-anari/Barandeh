@@ -1,9 +1,15 @@
 package ir.amirrezaanari.barandehplanning.planning
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
+// 1. Import necessary animation components
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -22,11 +28,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.CopyAll
+import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,17 +47,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import ir.amirrezaanari.barandehplanning.R
 import ir.amirrezaanari.barandehplanning.planning.components.DateSelector
 import ir.amirrezaanari.barandehplanning.planning.components.SectionFilterChip
 import ir.amirrezaanari.barandehplanning.planning.components.TaskItem
 import ir.amirrezaanari.barandehplanning.planning.database.PlannerViewModel
 import ir.amirrezaanari.barandehplanning.planning.database.TaskEntity
+import ir.amirrezaanari.barandehplanning.planning.voicetask.AddVoiceTaskBottomSheet
+import ir.amirrezaanari.barandehplanning.planning.voicetask.VoiceProcessingState
 import ir.amirrezaanari.barandehplanning.ui.theme.green
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
@@ -56,6 +75,7 @@ import ir.amirrezaanari.barandehplanning.ui.theme.secondary
 fun MainPlannerScreen(viewModel: PlannerViewModel) {
     var showAddBottomSheet by remember { mutableStateOf(false) }
     var showEditBottomSheet by remember { mutableStateOf(false) }
+    var showAddVoiceTaskBottomSheet by remember { mutableStateOf(false) }
     var selectedTask by remember { mutableStateOf<TaskEntity?>(null) }
     var isPlannedSection by remember { mutableStateOf(true) }
 
@@ -63,20 +83,19 @@ fun MainPlannerScreen(viewModel: PlannerViewModel) {
     val plannedTasks by viewModel.plannedTasks.collectAsState()
     val completedTasks by viewModel.completedTasks.collectAsState()
 
+    val voiceProcessingState by viewModel.voiceProcessingState.collectAsState()
+
+
+    var isAddClicked by remember { mutableStateOf(false) }
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { showAddBottomSheet = true },
-                containerColor = mainwhite,
-                contentColor = primary
-            ) {
-                Icon(
-                    Icons.Rounded.Add,
-                    contentDescription = "Add task",
-                    tint = primary,
-                    modifier = Modifier.size(35.dp)
-                )
-            }
+            // Call the new, organized composable here
+            ExpandingFloatingActionButton(
+                isExpanded = isAddClicked,
+                onMainFabClick = { isAddClicked = !isAddClicked },
+                onKeyboardFabClick = { showAddBottomSheet = true },
+                onMicFabClick = { showAddVoiceTaskBottomSheet = true }
+            )
         }
     ) { padding ->
         Column(
@@ -122,11 +141,16 @@ fun MainPlannerScreen(viewModel: PlannerViewModel) {
             AnimatedContent(
                 targetState = isPlannedSection,
                 transitionSpec = {
-                    fadeIn(animationSpec = tween(300)) togetherWith fadeOut(animationSpec = tween(300))
-                }
+                    fadeIn(animationSpec = tween(200)) togetherWith fadeOut(
+                        animationSpec = tween(
+                            300
+                        )
+                    )
+                },
+                label = "task list"
             ) { targetIsPlanned ->
                 if (targetIsPlanned) {
-                    if (plannedTasks.isNotEmpty()){
+                    if (plannedTasks.isNotEmpty()) {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(plannedTasks) { task ->
                                 TaskItem(
@@ -141,39 +165,39 @@ fun MainPlannerScreen(viewModel: PlannerViewModel) {
                                 )
                             }
                         }
-                    } else{
-                        Column (
+                    } else {
+                        Column(
                             modifier = Modifier
                                 .fillMaxSize(),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
-                        ){
+                        ) {
                             Image(
                                 painter = painterResource(R.drawable.emptybox),
                                 contentDescription = "empty tasks",
-                                modifier = Modifier.size(230.dp)
+                                modifier = Modifier.fillMaxWidth(0.6f)
                             )
                             Spacer(Modifier.height(10.dp))
-                            Text("هیچ برنامه\u200Cی ریخته\u200Cشده\u200Cای نداری! ☹️")
+                            Text("هیچ برنامه ای این نریختی هنوز! ☹️")
                         }
                     }
                 } else {
-                    if (plannedTasks.isEmpty()){
-                        Column (
+                    if (plannedTasks.isEmpty()) {
+                        Column(
                             modifier = Modifier
                                 .fillMaxSize(),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
-                        ){
+                        ) {
                             Image(
                                 painter = painterResource(R.drawable.emptybox),
                                 contentDescription = "empty tasks",
-                                modifier = Modifier.size(230.dp)
+                                modifier = Modifier.fillMaxWidth(0.6f)
                             )
                             Spacer(Modifier.height(10.dp))
-                            Text("هیچ برنامه\u200Cی ریخته\u200Cشده\u200Cای نداری! ☹️")
+                            Text("هیچ برنامه ای رو انجام ندادی هنوز! ☹️")
                         }
-                    } else{
+                    } else {
                         if (completedTasks.isEmpty()) {
                             Box(
                                 modifier = Modifier.fillMaxSize(),
@@ -242,5 +266,171 @@ fun MainPlannerScreen(viewModel: PlannerViewModel) {
                 selectedTask = null
             }
         )
+    }
+    if (showAddVoiceTaskBottomSheet){
+        AddVoiceTaskBottomSheet(
+            viewModel = viewModel,
+            onDismiss = { showAddVoiceTaskBottomSheet = false}
+        )
+    }
+
+    // دیالوگ لودینگ/خطا را بر اساس وضعیت نمایش بده
+    VoiceProcessingDialog(
+        state = voiceProcessingState,
+        onDismissError = { viewModel.resetVoiceProcessingState() }
+    )
+}
+
+@Composable
+fun ExpandingFloatingActionButton(
+    isExpanded: Boolean,
+    onMainFabClick: () -> Unit,
+    onKeyboardFabClick: () -> Unit,
+    onMicFabClick: () -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = AbsoluteAlignment.Left
+    ) {
+        // AnimatedVisibility for the secondary FABs
+        AnimatedVisibility(
+            visible = isExpanded,
+            enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
+            exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 })
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = AbsoluteAlignment.Left
+            ) {
+                // Mic FAB
+                FloatingActionButton(
+                    onClick = onMicFabClick,
+                    containerColor = mainwhite,
+                    contentColor = primary
+                ) {
+                    Icon(
+                        Icons.Rounded.Mic,
+                        contentDescription = "Add task by voice",
+                        tint = primary,
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
+                // Keyboard FAB
+                FloatingActionButton(
+                    onClick = onKeyboardFabClick,
+                    containerColor = mainwhite,
+                    contentColor = primary
+                ) {
+                    Icon(
+                        Icons.Rounded.Keyboard,
+                        contentDescription = "Add task by keyboard",
+                        tint = primary,
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(8.dp))
+        // Animate the color of the main FAB
+        val fabContainerColor by animateColorAsState(
+            targetValue = if (isExpanded) red else mainwhite,
+            animationSpec = tween(durationMillis = 200),
+            label = "fabContainerColor"
+        )
+
+        val fabIconColor by animateColorAsState(
+            targetValue = if (isExpanded) mainwhite else primary,
+            animationSpec = tween(durationMillis = 200),
+            label = "fabIconColor"
+        )
+
+        val rotationAngle by animateFloatAsState(
+            targetValue = if (isExpanded) 45f else 0f,
+            animationSpec = tween(durationMillis = 200),
+            label = "fabRotation"
+        )
+
+        // Main FAB
+        FloatingActionButton(
+            onClick = onMainFabClick,
+            containerColor = fabContainerColor,
+            contentColor = primary
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Add,
+                contentDescription = "Toggle Add Task",
+                tint = fabIconColor,
+                modifier = Modifier
+                    .size(40.dp)
+                    .rotate(rotationAngle)
+            )
+        }
+    }
+}
+
+// این کامپوزبل را به انتهای فایل MainPlannerScreen.kt اضافه کنید
+
+@Composable
+fun VoiceProcessingDialog(
+    state: VoiceProcessingState,
+    onDismissError: () -> Unit
+) {
+    // فقط در صورتی که وضعیت در حال لود یا خطا باشد، دیالوگ را نمایش بده
+    if (state is VoiceProcessingState.Loading || state is VoiceProcessingState.Error) {
+        Dialog(
+            // در حالت لودینگ، دیالوگ با کلیک بسته نشود
+            onDismissRequest = { if (state is VoiceProcessingState.Error) onDismissError() }
+        ) {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    when (state) {
+                        is VoiceProcessingState.Loading -> {
+                            CircularProgressIndicator(
+                                color = red
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text("در حال پردازش...")
+                        }
+                        is VoiceProcessingState.Error -> {
+                            Icon(
+                                imageVector = Icons.Rounded.Close,
+                                contentDescription = "Error",
+                                tint = Color.Red,
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "خطا",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(state.message, textAlign = TextAlign.Center)
+                            Spacer(modifier = Modifier.height(24.dp))
+                            Button(
+                                onClick = onDismissError,
+                                shape = RoundedCornerShape(15.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = mainwhite,
+                                    contentColor = secondary
+                                )
+                            ) {
+                                Text("متوجه شدم")
+                            }
+                        }
+                        VoiceProcessingState.Idle -> {
+                            // In Idle state, the dialog is not shown.
+                        }
+                    }
+                }
+            }
+        }
     }
 }

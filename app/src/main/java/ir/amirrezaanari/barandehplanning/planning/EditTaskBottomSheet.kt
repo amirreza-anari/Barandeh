@@ -88,7 +88,6 @@ fun EditTaskBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.78f)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -122,7 +121,7 @@ fun EditTaskBottomSheet(
                     .padding(top = 5.dp),
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             IconAndText(
                 icon = Icons.Rounded.AccessTime,
@@ -192,8 +191,6 @@ fun EditTaskBottomSheet(
 
                 }
             }
-
-            Spacer(modifier = Modifier.weight(1f))
 
 
             Row(

@@ -156,12 +156,12 @@ fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel)
                     contentDescription = "role picture",
                     modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(Modifier.height(20.dp))
                 Text(
                     text = currentPrompt.description,
                     textAlign = TextAlign.Center,
                     fontSize = 16.sp,
                     modifier = Modifier
-                        .padding(vertical = 20.dp, horizontal = 16.dp)
                         .fillMaxWidth()
                 )
             }
@@ -241,10 +241,10 @@ fun DaySelectionDialog(
                         .padding(vertical = 10.dp),
                     items = dayPickerItems,
                     state = pickerState,
-                    textModifier = Modifier.padding(top = 7.dp),
+                    textModifier = Modifier.padding(5.dp),
                     textStyle = TextStyle(
                         fontFamily = CustomFontFamily,
-                        fontSize = 23.sp
+                        fontSize = 20.sp
                     )
                 )
 
