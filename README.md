@@ -78,6 +78,8 @@ ir.amirrezaanari.barandehplanning/
 ├── planning/         # Task planning features
 └── ui/theme/         # App theming
 ```
+## Link to Documentation
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/amirreza-anari/Barandeh)
 
 ## Contributing
 
