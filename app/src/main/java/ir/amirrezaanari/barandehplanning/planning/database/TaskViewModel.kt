@@ -6,13 +6,11 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-// --- Import های جدید برای Gemini ---
-import ir.amirrezaanari.barandehplanning.planning.GeminiResponse
-import ir.amirrezaanari.barandehplanning.planning.RetrofitInstance
-import ir.amirrezaanari.barandehplanning.planning.TaskItem
-import ir.amirrezaanari.barandehplanning.planning.VoiceRequest
+import ir.amirrezaanari.barandehplanning.planning.voicetask.GeminiResponse
+import ir.amirrezaanari.barandehplanning.planning.voicetask.RetrofitInstance
+import ir.amirrezaanari.barandehplanning.planning.voicetask.TaskItem
+import ir.amirrezaanari.barandehplanning.planning.voicetask.VoiceRequest
 import ir.amirrezaanari.barandehplanning.planning.voicetask.VoiceProcessingState
-// --- Import های تم شما ---
 import ir.amirrezaanari.barandehplanning.ui.theme.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,10 +21,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import saman.zamani.persiandate.PersianDate
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 class PlannerViewModel(
     private val repository: PlannerRepository
@@ -36,7 +32,6 @@ class PlannerViewModel(
         red, orange, green, mint, cyan, blue, indigo, purple, pink, brown
     )
 
-    // --- State Management for Voice Processing ---
     private val _voiceProcessingState = MutableStateFlow<VoiceProcessingState>(VoiceProcessingState.Idle)
     val voiceProcessingState: StateFlow<VoiceProcessingState> = _voiceProcessingState.asStateFlow()
 
@@ -69,19 +64,10 @@ class PlannerViewModel(
         }
     }
 
-    // --- START: بلوک کد جدید برای سرویس Gemini ---
-
-    /**
-     * Resets the voice processing state back to Idle. Called from the UI when the error dialog is dismissed.
-     */
     fun resetVoiceProcessingState() {
         _voiceProcessingState.value = VoiceProcessingState.Idle
     }
 
-    /**
-     * Public function to be called from the UI to start processing the recognized text via Gemini.
-     * @param text The voice command recognized by the Speech-to-Text engine.
-     */
     fun processVoiceCommand(text: String) {
         if (text.isBlank() || text.startsWith("خطا")) {
             _voiceProcessingState.value = VoiceProcessingState.Error("لطفاً یک دستور معتبر بگویید.")
@@ -100,11 +86,10 @@ class PlannerViewModel(
                 if (response.isSuccessful) {
                     val geminiResponse = response.body()
                     if (geminiResponse != null && geminiResponse.tasks.isNotEmpty()) {
-                        // Loop through the list of tasks from Gemini and add each one
                         geminiResponse.tasks.forEach { taskItem ->
                             createAndAddTask(taskItem)
                         }
-                        _voiceProcessingState.value = VoiceProcessingState.Idle // Success
+                        _voiceProcessingState.value = VoiceProcessingState.Idle
                     } else {
                         _voiceProcessingState.value = VoiceProcessingState.Error("وظیفه‌ای در متن شما پیدا نشد یا پاسخ سرور نامعتبر بود.")
                     }
@@ -121,33 +106,24 @@ class PlannerViewModel(
         })
     }
 
-    /**
-     * Creates a TaskEntity from the structured data received from Gemini and calls the main addTask function.
-     */
     private fun createAndAddTask(taskItem: TaskItem) {
-        // Validate that essential fields are not empty before creating a task
-        if (taskItem.task_name.isNotBlank() && taskItem.start_time.isNotBlank() && taskItem.end_time.isNotBlank()) {
+        if (taskItem.taskName.isNotBlank() && taskItem.startTime.isNotBlank() && taskItem.endTime.isNotBlank()) {
             val newTask = TaskEntity(
                 date = _selectedDate.value.toString(),
-                title = taskItem.task_name,
-                startTime = taskItem.start_time,
-                endTime = taskItem.end_time,
+                title = taskItem.taskName,
+                startTime = taskItem.startTime,
+                endTime = taskItem.endTime,
                 details = "",
-                color = 0, // Let the main addTask handle color assignment
+                color = 0,
                 isPlanned = true,
                 isChecked = false,
                 parentId = null
             )
-            addTask(newTask) // Use your existing addTask function which already handles random colors
+            addTask(newTask)
         } else {
             Log.w("PlannerViewModel", "Skipping task creation due to blank fields: $taskItem")
         }
     }
-
-    // --- END: بلوک کد جدید برای سرویس Gemini ---
-
-
-    // --- توابع موجود شما (بدون تغییر) ---
 
     suspend fun getLastNDaysStatistics(days: Int): String {
         val result = StringBuilder()

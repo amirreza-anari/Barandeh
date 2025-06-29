@@ -20,15 +20,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.NavigateBefore
 import androidx.compose.material.icons.automirrored.rounded.NavigateNext
-import androidx.compose.material.icons.rounded.LocationCity
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.School
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -36,9 +31,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -56,7 +51,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import ir.amirrezaanari.barandehplanning.ai.ui.components.Picker
 import ir.amirrezaanari.barandehplanning.ai.ui.components.rememberPickerState
-import ir.amirrezaanari.barandehplanning.homescreen.InfoCombination
 import ir.amirrezaanari.barandehplanning.planning.components.toPersianDigits
 import ir.amirrezaanari.barandehplanning.planning.database.PlannerViewModel
 import ir.amirrezaanari.barandehplanning.ui.theme.CustomFontFamily
@@ -67,20 +61,17 @@ import ir.amirrezaanari.barandehplanning.ui.theme.secondary
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 
-// فرض می‌شود که `samplePrompts` و دیگر وابستگی‌ها مانند `Picker` در پروژه شما تعریف شده‌اند.
-
 @Composable
 fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel) {
 
     val coroutineScope = rememberCoroutineScope()
-    var currentIndex by remember { mutableStateOf(0) }
+    var currentIndex by remember { mutableIntStateOf(0) }
 
-    // State برای کنترل نمایش دیالوگ
     var showDayPickerDialog by remember { mutableStateOf(false) }
 
     val navigateToChat: (Int) -> Unit = { selectedDays ->
         coroutineScope.launch {
-            val systemPrompt = samplePrompts[currentIndex].systemPrompt
+            val systemPrompt = AiRolesPrompts[currentIndex].systemPrompt
             val encodedPrompt = URLEncoder.encode(systemPrompt, "UTF-8")
 
             var statistics = ""
@@ -116,51 +107,46 @@ fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel)
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AiFirstScreenTopAppBar(
-            name = samplePrompts[currentIndex].name,
-            job = samplePrompts[currentIndex].job,
+            name = AiRolesPrompts[currentIndex].name,
+            job = AiRolesPrompts[currentIndex].job,
             onPreviousClick = {
                 if (currentIndex > 0) {
                     currentIndex--
                 }
             },
             onNextClick = {
-                if (currentIndex < samplePrompts.size - 1) {
+                if (currentIndex < AiRolesPrompts.size - 1) {
                     currentIndex++
                 }
             }
         )
         Spacer(Modifier.height(5.dp))
 
-        // --- تغییر اصلی: استفاده از AnimatedContent برای انیمیشن محتوا ---
         AnimatedContent(
             targetState = currentIndex,
             label = "character-animation",
             transitionSpec = {
-                // انیمیشن هوشمند: تشخیص جهت حرکت (به جلو یا به عقب)
                 if (targetState > initialState) {
-                    // حرکت به جلو: محتوای جدید از راست وارد، قبلی به چپ خارج
                     (slideInHorizontally(animationSpec = tween(200)) { fullWidth -> fullWidth } + fadeIn(animationSpec = tween(200)))
                         .togetherWith(slideOutHorizontally(animationSpec = tween(200)) { fullWidth -> -fullWidth } + fadeOut(animationSpec = tween(200)))
                 } else {
-                    // حرکت به عقب: محتوای جدید از چپ وارد، قبلی به راست خارج
                     (slideInHorizontally(animationSpec = tween(200)) { fullWidth -> -fullWidth } + fadeIn(animationSpec = tween(200)))
                         .togetherWith(slideOutHorizontally(animationSpec = tween(200)) { fullWidth -> fullWidth } + fadeOut(animationSpec = tween(200)))
                 }
             }
         ) { targetIndex ->
-            // محتوای داخل انیمیشن بر اساس targetIndex نمایش داده می‌شود
-            val currentPrompt = samplePrompts[targetIndex]
+            val currentPrompt = AiRolesPrompts[targetIndex]
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Image(
                     painter = painterResource(currentPrompt.picture),
                     contentDescription = "role picture",
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(0.8f)
                 )
                 Spacer(Modifier.height(20.dp))
                 Text(
                     text = currentPrompt.description,
                     textAlign = TextAlign.Center,
-                    fontSize = 16.sp,
+                    fontSize = 15.sp,
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -171,7 +157,7 @@ fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel)
 
         Button(
             onClick = {
-                if (samplePrompts[currentIndex].showPicker) {
+                if (AiRolesPrompts[currentIndex].showPicker) {
                     showDayPickerDialog = true
                 } else {
                     navigateToChat(0)
@@ -194,12 +180,6 @@ fun AiFirstScreen(navController: NavHostController, viewModel: PlannerViewModel)
     }
 }
 
-
-/**
- * کامپوننت دیالوگ برای انتخاب تعداد روزها.
- * @param onDismissRequest تابعی که هنگام درخواست بسته شدن دیالوگ (مانند کلیک روی "لغو") فراخوانی می‌شود.
- * @param onConfirm تابعی که هنگام تایید (با پارامتر تعداد روزهای انتخابی) فراخوانی می‌شود.
- */
 @Composable
 fun DaySelectionDialog(
     onDismissRequest: () -> Unit,

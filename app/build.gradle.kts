@@ -1,9 +1,22 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
 }
+
+
+val localProperties = Properties()
+
+val localPropertiesFile = rootProject.file("local.properties")
+
+if (localPropertiesFile.exists() && localPropertiesFile.isFile) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
 
 android {
     namespace = "ir.amirrezaanari.barandehplanning"
@@ -12,11 +25,23 @@ android {
     defaultConfig {
         applicationId = "ir.amirrezaanari.barandehplanning"
         minSdk = 26
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+
+        // Adding Task By Voice Base URL
+        val voiceTaskBaseUrl = localProperties.getProperty("VOICE_TASK_BASE_URL", "")
+        buildConfigField("String", "VOICE_TASK_BASE_URL", "\"$voiceTaskBaseUrl\"")
+
+        // Gemini Chat Base URL
+        val geminiChatBaseUrl = localProperties.getProperty("GEMINI_CHAT_BASE_URL", "")
+        buildConfigField("String", "GEMINI_CHAT_BASE_URL", "\"$geminiChatBaseUrl\"")
+
+
     }
 
     buildTypes {
@@ -37,6 +62,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -74,11 +100,9 @@ dependencies {
     implementation(libs.msz.progress.indicator)
     implementation(libs.persiandate)
     implementation(libs.jalali.datepicker.compose)
-    implementation("ir.huri:JalaliCalendar:1.3.3")
+    implementation(libs.jalalicalendar)
     implementation(libs.persian.material.datepicker)
-    implementation("com.google.accompanist:accompanist-pager:0.36.0")
-    implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.12.0")
-    implementation("org.minidns:minidns-hla:1.1.1")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation(libs.accompanist.pager)
+    implementation(libs.logging.interceptor)
 
 }

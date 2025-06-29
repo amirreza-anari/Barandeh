@@ -8,7 +8,6 @@ import ir.amirrezaanari.barandehplanning.ai.ui.AiScreen
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import ir.amirrezaanari.barandehplanning.homescreen.HomeScreen
-import ir.amirrezaanari.barandehplanning.homescreen.NotesSection
 import ir.amirrezaanari.barandehplanning.planning.database.PlannerViewModel
 import ir.amirrezaanari.barandehplanning.planning.MainPlannerScreen
 import ir.amirrezaanari.barandehplanning.tools.ToolsScreen

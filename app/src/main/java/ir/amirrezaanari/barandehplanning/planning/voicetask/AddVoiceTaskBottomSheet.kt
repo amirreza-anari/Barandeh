@@ -54,7 +54,7 @@ fun AddVoiceTaskBottomSheet(
     )
 
     val speechToTextConverter = remember {
-        val listener = object : onRecognitionListener {
+        val listener = object : OnRecognitionListener {
             override fun onReadyForSpeech() {}
             override fun onBeginningOfSpeech() {}
             override fun onEndOfSpeech() { isRecording = false }
@@ -94,10 +94,7 @@ fun AddVoiceTaskBottomSheet(
             resultText = if (errorText != null) errorText!! else recognizedText,
             isError = errorText != null,
             onConfirm = { result ->
-                // *** این بخش کلیدی‌ترین تغییر است ***
-                // ۱. فراخوانی ViewModel برای پردازش متن
                 viewModel.processVoiceCommand(result)
-                // ۲. بستن BottomSheet
                 onDismiss()
             },
             onRetry = {
@@ -222,7 +219,7 @@ fun VoiceResultCheckDialog(
                 ) {
                     if (!isError) {
                         Button(
-                            onClick = { onConfirm(resultText) }, // ارسال متن نتیجه در زمان تایید
+                            onClick = { onConfirm(resultText) },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = green)

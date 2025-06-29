@@ -1,6 +1,5 @@
 package ir.amirrezaanari.barandehplanning.planning
 
-// 1. Import necessary animation components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
@@ -89,7 +88,6 @@ fun MainPlannerScreen(viewModel: PlannerViewModel) {
     var isAddClicked by remember { mutableStateOf(false) }
     Scaffold(
         floatingActionButton = {
-            // Call the new, organized composable here
             ExpandingFloatingActionButton(
                 isExpanded = isAddClicked,
                 onMainFabClick = { isAddClicked = !isAddClicked },
@@ -274,7 +272,6 @@ fun MainPlannerScreen(viewModel: PlannerViewModel) {
         )
     }
 
-    // دیالوگ لودینگ/خطا را بر اساس وضعیت نمایش بده
     VoiceProcessingDialog(
         state = voiceProcessingState,
         onDismissError = { viewModel.resetVoiceProcessingState() }
@@ -292,7 +289,6 @@ fun ExpandingFloatingActionButton(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = AbsoluteAlignment.Left
     ) {
-        // AnimatedVisibility for the secondary FABs
         AnimatedVisibility(
             visible = isExpanded,
             enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
@@ -302,7 +298,6 @@ fun ExpandingFloatingActionButton(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = AbsoluteAlignment.Left
             ) {
-                // Mic FAB
                 FloatingActionButton(
                     onClick = onMicFabClick,
                     containerColor = mainwhite,
@@ -315,7 +310,6 @@ fun ExpandingFloatingActionButton(
                         modifier = Modifier.size(25.dp)
                     )
                 }
-                // Keyboard FAB
                 FloatingActionButton(
                     onClick = onKeyboardFabClick,
                     containerColor = mainwhite,
@@ -332,7 +326,6 @@ fun ExpandingFloatingActionButton(
         }
 
         Spacer(Modifier.height(8.dp))
-        // Animate the color of the main FAB
         val fabContainerColor by animateColorAsState(
             targetValue = if (isExpanded) red else mainwhite,
             animationSpec = tween(durationMillis = 200),
@@ -351,7 +344,6 @@ fun ExpandingFloatingActionButton(
             label = "fabRotation"
         )
 
-        // Main FAB
         FloatingActionButton(
             onClick = onMainFabClick,
             containerColor = fabContainerColor,
@@ -369,17 +361,13 @@ fun ExpandingFloatingActionButton(
     }
 }
 
-// این کامپوزبل را به انتهای فایل MainPlannerScreen.kt اضافه کنید
-
 @Composable
 fun VoiceProcessingDialog(
     state: VoiceProcessingState,
     onDismissError: () -> Unit
 ) {
-    // فقط در صورتی که وضعیت در حال لود یا خطا باشد، دیالوگ را نمایش بده
     if (state is VoiceProcessingState.Loading || state is VoiceProcessingState.Error) {
         Dialog(
-            // در حالت لودینگ، دیالوگ با کلیک بسته نشود
             onDismissRequest = { if (state is VoiceProcessingState.Error) onDismissError() }
         ) {
             Card(
@@ -425,8 +413,7 @@ fun VoiceProcessingDialog(
                                 Text("متوجه شدم")
                             }
                         }
-                        VoiceProcessingState.Idle -> {
-                            // In Idle state, the dialog is not shown.
+                        else -> {
                         }
                     }
                 }

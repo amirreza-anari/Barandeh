@@ -76,7 +76,6 @@ val motivationalQuotes = listOf(
 )
 
 
-// تابع بازگشتی برای دریافت جمله انگیزشی روز
 fun getMotivationalQuote(index: Int = LocalDate.now().dayOfYear % motivationalQuotes.size): String {
     return if (index < 0) getMotivationalQuote(index + motivationalQuotes.size)
     else motivationalQuotes[index % motivationalQuotes.size]

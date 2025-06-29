@@ -2,10 +2,8 @@ package ir.amirrezaanari.barandehplanning.onboarding
 
 import android.content.Context
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
@@ -18,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import ir.amirrezaanari.barandehplanning.MainActivity
-import ir.amirrezaanari.barandehplanning.R
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
 import kotlinx.coroutines.launch
@@ -55,7 +51,6 @@ fun OnboardingScreen(navController: NavHostController, context: MainActivity) {
                 OnboardingPageContent(page = pages[position])
             }
 
-            // Navigation Section
             ButtonsSection(
                 pagerState = pagerState,
                 currentPage = pagerState.currentPage,
@@ -171,7 +166,6 @@ fun ButtonsSection(
                 )
             }
         } else {
-            // Get Started Button
             Button(
                 onClick = {
                     onBoardingIsFinished(context = context)

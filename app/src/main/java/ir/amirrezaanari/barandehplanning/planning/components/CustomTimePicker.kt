@@ -103,7 +103,7 @@ fun TimePicker(
             )
 
             if (!is24TimeFormat) {
-                timeState.value.period?.let {
+                timeState.value.period?.let { it ->
                     AmPmPicker(
                         selectedPeriod = it,
                         itemHeight = itemHeight,
@@ -135,7 +135,7 @@ private fun <T> ScrollableNumberPicker(
     onItemSelected: (T) -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    var itemHeightPx by remember { mutableStateOf(0) }
+    var itemHeightPx by remember { mutableIntStateOf(0) }
 
     val listState = rememberSaveable(saver = LazyListState.Saver) {
         val centerOffset = Int.MAX_VALUE / 2 - (Int.MAX_VALUE / 2) % items.size
@@ -144,6 +144,14 @@ private fun <T> ScrollableNumberPicker(
             firstVisibleItemIndex = centerOffset + selectedIndex,
             firstVisibleItemScrollOffset = 0
         )
+    }
+
+    // A derived state to determine the currently centered item.
+    // This will only trigger recomposition for the affected items when the centered item changes.
+    val centeredItemIndex by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex + if (listState.firstVisibleItemScrollOffset > itemHeightPx / 2) 1 else 0
+        }
     }
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
@@ -167,9 +175,8 @@ private fun <T> ScrollableNumberPicker(
                 ) {
                     Text(
                         text = formatNumber(item),
-                        style = if (index == listState.firstVisibleItemIndex &&
-                            listState.firstVisibleItemScrollOffset == 0
-                        )
+                        // Reading from derivedStateOf is more efficient here.
+                        style = if (index == centeredItemIndex)
                             textStyles.selectedTextStyle else textStyles.defaultTextStyle
                     )
                 }
@@ -190,18 +197,18 @@ private fun <T> ScrollableNumberPicker(
         if (!listState.isScrollInProgress && itemHeightPx > 0) {
             val offset = listState.firstVisibleItemScrollOffset
             if (offset != 0) {
+                val targetOffset = if (offset > itemHeightPx / 2) {
+                    itemHeightPx - offset
+                } else {
+                    -offset
+                }
                 scope.launch {
-                    val targetOffset = if (offset > itemHeightPx / 2) {
-                        itemHeightPx - offset
-                    } else {
-                        -offset
-                    }
                     listState.animateScrollBy(targetOffset.toFloat())
-
-                    val selectedIndex = listState.firstVisibleItemIndex % items.size
-                    onItemSelected(items[selectedIndex])
                 }
             }
+            // The onItemSelected should be driven by the final resting state.
+            val finalIndex = listState.firstVisibleItemIndex + if (listState.firstVisibleItemScrollOffset > itemHeightPx / 2) 1 else 0
+            onItemSelected(items[finalIndex % items.size])
         }
     }
 }
@@ -286,9 +293,9 @@ private fun parseTime(time: LocalTime, is24TimeFormat: Boolean): TimeState {
 }
 
 private fun TimeState.toLocalTime(): LocalTime {
-    val hour = when {
-        period == DayPeriod.PM -> hours % 12 + 12
-        period == DayPeriod.AM -> hours % 12
+    val hour = when (period) {
+        DayPeriod.PM -> hours % 12 + 12
+        DayPeriod.AM -> hours % 12
         else -> hours
     }
     return LocalTime.of(hour, minutes)

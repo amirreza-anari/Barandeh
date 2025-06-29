@@ -22,8 +22,6 @@ import ir.amirrezaanari.barandehplanning.ui.theme.orange
 import ir.amirrezaanari.barandehplanning.ui.theme.pink
 import ir.amirrezaanari.barandehplanning.ui.theme.purple
 import ir.amirrezaanari.barandehplanning.ui.theme.red
-import ir.amirrezaanari.barandehplanning.ui.theme.teal
-import ir.amirrezaanari.barandehplanning.ui.theme.yellow
 
 data class CardColor(
     val color: Color

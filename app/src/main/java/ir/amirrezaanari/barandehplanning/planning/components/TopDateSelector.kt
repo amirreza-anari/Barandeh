@@ -5,7 +5,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -47,7 +46,6 @@ fun DateSelector(
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    // حالت برای کنترل باز یا بسته بودن JalaliDatePicker
     val showDatePicker = remember { mutableStateOf(false) }
 
 
@@ -74,7 +72,7 @@ fun DateSelector(
                     )
 
                     onDateSelected(newLocalDate)
-                    showDatePicker.value = false // بستن DatePicker
+                    showDatePicker.value = false
                 }
             )
         }
@@ -110,11 +108,9 @@ fun DateSelector(
             AnimatedContent(
                 targetState = selectedDate,
                 transitionSpec = {
-                    // مثال با fadeIn و fadeOut؛ می‌توانید از slideIn/slideOut هم استفاده کنید
                     fadeIn(animationSpec = tween(400)) togetherWith fadeOut(animationSpec = tween(400))
                 }
             ) { targetDate ->
-                // تبدیل تاریخ میلادی به شمسی
                 val persianDate = PersianDate().apply {
                     setGrgYear(targetDate.year)
                     setGrgMonth(targetDate.monthValue)

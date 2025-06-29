@@ -39,13 +39,11 @@ fun AiScreen(viewModel: PlannerViewModel){
         ) {
             composable("home") { AiFirstScreen(navController,viewModel) }
             composable(
-                // ۱. مسیر را برای دریافت پارامتر query تعریف می‌کنیم
                 route = "chat/{prompt}?stats={stats}",
                 arguments = listOf(
                     navArgument("prompt") {
                         type = NavType.StringType
                     },
-                    // ۲. آرگومان stats را به عنوان یک پارامتر اختیاری (nullable) تعریف می‌کنیم
                     navArgument("stats") {
                         type = NavType.StringType
                         nullable = true
@@ -53,14 +51,12 @@ fun AiScreen(viewModel: PlannerViewModel){
                     }
                 )
             ) { backStackEntry ->
-                // ۳. هر دو آرگومان را دریافت و decode می‌کنیم
                 val encodedPrompt = backStackEntry.arguments?.getString("prompt") ?: ""
                 val prompt = URLDecoder.decode(encodedPrompt, "UTF-8")
 
                 val encodedStats = backStackEntry.arguments?.getString("stats")
                 val stats = if (encodedStats != null) URLDecoder.decode(encodedStats, "UTF-8") else ""
 
-                // ۴. هر دو داده را به صفحه چت پاس می‌دهیم
                 ChatRoute(navController = navController, prompt = prompt, stats = stats)
             }
         }

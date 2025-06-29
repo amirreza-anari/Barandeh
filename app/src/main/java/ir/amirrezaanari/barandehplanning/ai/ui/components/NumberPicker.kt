@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 
 
@@ -43,9 +44,9 @@ class PickerState {
 
 @Composable
 fun Picker(
-    items: List<String>,  // لیست رشته‌ها به عنوان آیتم‌ها
-    state: PickerState = rememberPickerState(),
     modifier: Modifier = Modifier,
+    items: List<String>,
+    state: PickerState = rememberPickerState(),
     startIndex: Int = 0,
     visibleItemsCount: Int = 3,
     textModifier: Modifier = Modifier,
@@ -63,8 +64,8 @@ fun Picker(
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndex)
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
-    val itemHeightPixels = remember { mutableStateOf(0) }
-    val itemHeightDp = pixelsToDp(itemHeightPixels.value)
+    val itemHeightPixels = remember { mutableIntStateOf(0) }
+    val itemHeightDp = pixelsToDp(itemHeightPixels.intValue)
 
     val fadingEdgeGradient = remember {
         Brush.verticalGradient(
@@ -95,12 +96,12 @@ fun Picker(
         ) {
             items(listScrollCount) { index ->
                 Text(
-                    text = getItem(index),  // نمایش رشته به عنوان آیتم
+                    text = getItem(index),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = textStyle,
                     modifier = Modifier
-                        .onSizeChanged { size -> itemHeightPixels.value = size.height }
+                        .onSizeChanged { size -> itemHeightPixels.intValue = size.height }
                         .then(textModifier)
                 )
             }

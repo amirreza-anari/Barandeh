@@ -1,6 +1,5 @@
 package ir.amirrezaanari.barandehplanning.planning.voicetask
 
-// ... (imports remain the same)
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -12,22 +11,20 @@ import android.speech.SpeechRecognizer
 import android.util.Log
 import androidx.core.content.ContextCompat
 
-class SpeechToTextConverter(private val context: Context, private val onRecognitionListener: onRecognitionListener) {
-    // ... (properties remain the same)
-    private val TAG_RECOGNITION = "SpeechRecognitionTag"
+class SpeechToTextConverter(private val context: Context, private val onRecognitionListener: OnRecognitionListener) {
+    private val tagRecognition = "SpeechRecognitionTag"
     private val speechRecognizer: SpeechRecognizer =
         SpeechRecognizer.createSpeechRecognizer(context)
 
-    // ... (recognitionListener remains the same)
     private val recognitionListener: RecognitionListener = object : RecognitionListener {
         override fun onReadyForSpeech(params: Bundle?) {
             onRecognitionListener.onReadyForSpeech()
-            Log.d(TAG_RECOGNITION, "onReadyForSpeech:")
+            Log.d(tagRecognition, "onReadyForSpeech:")
         }
 
         override fun onBeginningOfSpeech() {
             onRecognitionListener.onBeginningOfSpeech()
-            Log.d(TAG_RECOGNITION, "onBeginningOfSpeech:")
+            Log.d(tagRecognition, "onBeginningOfSpeech:")
         }
 
         override fun onRmsChanged(rmsdB: Float) {}
@@ -36,7 +33,7 @@ class SpeechToTextConverter(private val context: Context, private val onRecognit
 
         override fun onEndOfSpeech() {
             onRecognitionListener.onEndOfSpeech()
-            Log.d(TAG_RECOGNITION, "onEndOfSpeech:")
+            Log.d(tagRecognition, "onEndOfSpeech:")
         }
 
         override fun onError(error: Int) {
@@ -53,7 +50,7 @@ class SpeechToTextConverter(private val context: Context, private val onRecognit
                 else -> "خطای ناشناخته"
             }
             onRecognitionListener.onError(errorMessage)
-            Log.e(TAG_RECOGNITION, "onError: $errorMessage")
+            Log.e(tagRecognition, "onError: $errorMessage")
         }
 
         override fun onResults(results: Bundle?) {
@@ -62,7 +59,7 @@ class SpeechToTextConverter(private val context: Context, private val onRecognit
                 onRecognitionListener.onResults(resultArray[0])
             } else {
                 onRecognitionListener.onError("نتیجه‌ای یافت نشد")
-                Log.e(TAG_RECOGNITION, "نتیجه‌ای یافت نشد")
+                Log.e(tagRecognition, "نتیجه‌ای یافت نشد")
             }
         }
 
@@ -77,7 +74,7 @@ class SpeechToTextConverter(private val context: Context, private val onRecognit
             != PackageManager.PERMISSION_GRANTED
         ) {
             onRecognitionListener.onError("مجوز ضبط صدا داده نشده است")
-            Log.e(TAG_RECOGNITION, "مجوز ضبط صدا داده نشده است")
+            Log.e(tagRecognition, "مجوز ضبط صدا داده نشده است")
             return
         }
 
@@ -93,7 +90,6 @@ class SpeechToTextConverter(private val context: Context, private val onRecognit
         speechRecognizer.stopListening()
     }
 
-    // متد جدید برای آزادسازی منابع
     fun destroy() {
         speechRecognizer.destroy()
     }

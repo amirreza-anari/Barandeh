@@ -1,11 +1,9 @@
 package ir.amirrezaanari.barandehplanning.homescreen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,7 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavHostController
 import ir.amirrezaanari.barandehplanning.planning.components.IconAndText
 import ir.amirrezaanari.barandehplanning.planning.database.PlannerViewModel
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite

@@ -31,7 +31,7 @@ fun CustomTextField(
         onValueChange = onValueChange,
         singleLine = singleline,
         keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Done // تنظیم عمل کیبورد روی Done
+            imeAction = ImeAction.Done
         ),
         maxLines = maxlines,
         shape = RoundedCornerShape(8.dp),

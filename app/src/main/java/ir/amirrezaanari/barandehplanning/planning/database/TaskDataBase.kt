@@ -36,7 +36,6 @@ data class TaskEntity(
     val parentId: Long? = null
 )
 
-// Data Access Objects (DAO)
 @Dao
 interface DateDao {
     @Query("SELECT * FROM dates ORDER BY date DESC")
@@ -79,7 +78,6 @@ interface TaskDao {
     suspend fun findCompletedCopy(parentId: Long): TaskEntity?
 }
 
-// Database
 @Database(entities = [DateEntity::class, TaskEntity::class], version = 2)
 abstract class PlannerDatabase : RoomDatabase() {
     abstract fun dateDao(): DateDao
@@ -105,10 +103,8 @@ abstract class PlannerDatabase : RoomDatabase() {
     }
 }
 
-// Repository
 class PlannerRepository(private val dateDao: DateDao, private val taskDao: TaskDao) {
-    // Date operations
-    fun getAllDates() = dateDao.getAllDates()
+//    fun getAllDates() = dateDao.getAllDates()
 
     suspend fun insertDate(date: DateEntity) {
         dateDao.insertDate(date)

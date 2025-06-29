@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -23,12 +22,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
-import androidx.compose.material.icons.automirrored.rounded.ArrowForwardIos
-import androidx.compose.material.icons.rounded.ArrowForwardIos
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -43,7 +37,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -53,12 +46,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.ehsanmsz.mszprogressindicator.progressindicator.LineScalePulseOutProgressIndicator
+import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import ir.amirrezaanari.barandehplanning.R
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
@@ -69,8 +61,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChatRoute(
     navController: NavHostController,
-    prompt: String, // ۱. پرامپت سیستمی را دریافت می‌کند
-    stats: String,  // ۲. آمار را هم دریافت می‌کند
+    prompt: String,
+    stats: String,
     chatViewModel: ChatViewModel = viewModel()
 ) {
     val chatUiState by chatViewModel.uiState.collectAsState()
@@ -81,7 +73,6 @@ fun ChatRoute(
         chatViewModel.setSystemPrompt(prompt)
     }
 
-    // مکانیزم دوم: ارسال پیام اولیه خودکار (فقط اگر آمار وجود داشته باشد)
     LaunchedEffect(key1 = stats) {
         if (stats.isNotBlank()) {
             val initialMessage = "این برنامه من هست و این رو به خاطر داشته باش که دربارش ازت سوال میپرسم \n $stats"
@@ -222,23 +213,12 @@ fun ChatBubbleItem(
                 }
             }
             if (chatMessage.isPending) {
-//                BallPulseSyncProgressIndicator(
-//                    color = red,
-//                    modifier = Modifier
-//                        .align(Alignment.CenterVertically)
-//                        .padding(all = 8.dp)
-//                )
-                LineScalePulseOutProgressIndicator(
+                BallPulseProgressIndicator(
                     color = red,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(all = 8.dp)
+                        .padding(8.dp)
                 )
-//                CircularProgressIndicator(
-//                    modifier = Modifier
-//                        .align(Alignment.CenterVertically)
-//                        .padding(all = 8.dp)
-//                )
             }
         }
     }

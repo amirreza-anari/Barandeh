@@ -2,20 +2,14 @@ package ir.amirrezaanari.barandehplanning.ai.gemini
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ir.amirrezaanari.barandehplanning.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import okhttp3.ConnectionSpec
-import okhttp3.Dns
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
-import okhttp3.dnsoverhttps.DnsOverHttps
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.net.InetAddress
-import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
 
 
@@ -23,9 +17,7 @@ import java.util.concurrent.TimeUnit
 class ChatViewModel : ViewModel() {
 
     companion object {
-        // کلید API واقعی خود را در اینجا قرار دهید
-        private const val GEMINI_API_KEY = "AIzaSyD2t_yvE_kGeGFSCtiYoTm-oolmUkBqDKc"
-        private const val BASE_URL = "https://geminiapi.0amir0kylo0.workers.dev/"
+        private const val BASE_URL = BuildConfig.GEMINI_CHAT_BASE_URL
     }
 
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
@@ -65,7 +57,6 @@ class ChatViewModel : ViewModel() {
     }
 
     fun sendMessage(userMessage: String) {
-        // افزودن پیام کاربر به تاریخچه
         _uiState.value.addMessage(
             ChatMessage(
                 text = userMessage,
@@ -76,7 +67,6 @@ class ChatViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // ساخت تاریخچه چت به فرمت مورد نیاز API
                 val chatHistory = _uiState.value.messages.map { message ->
                     ChatHistoryItem(
                         text = message.text,
@@ -91,7 +81,6 @@ class ChatViewModel : ViewModel() {
                     )
                 }.toMutableList()
 
-                // افزودن پیام فعلی کاربر به عنوان آخرین محتوا
                 contents.add(
                     ContentItem(
                         role = "user",
@@ -99,9 +88,8 @@ class ChatViewModel : ViewModel() {
                     )
                 )
 
-                // تعریف system instruction همانطور که در واسط استفاده می‌شد
                 val systemInstructionText = _systemPrompt.value.ifBlank {
-                    "You are a helpful assistant." // پرامپت پشتیبان
+                    "تو یک دستیار باهوش و مهربان هستی."
                 }
 
                 val geminiRequest = GeminiRequest(
@@ -114,8 +102,7 @@ class ChatViewModel : ViewModel() {
                     )
                 )
 
-                // ارسال درخواست به Gemini API
-                val response = geminiService.generateContent(GEMINI_API_KEY, geminiRequest)
+                val response = geminiService.generateContent(geminiRequest)
 
                 _uiState.value.replaceLastPendingMessage()
 
@@ -130,7 +117,7 @@ class ChatViewModel : ViewModel() {
                     )
                 )
             } catch (e: Exception) {
-                e.printStackTrace() // برای دیدن جزئیات خطا
+                e.printStackTrace()
                 _uiState.value.replaceLastPendingMessage()
                 val errorMessage = getFriendlyErrorMessage(e)
                 _uiState.value.addMessage(

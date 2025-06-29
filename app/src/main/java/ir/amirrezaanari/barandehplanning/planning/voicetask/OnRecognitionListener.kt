@@ -1,6 +1,6 @@
 package ir.amirrezaanari.barandehplanning.planning.voicetask
 
-interface onRecognitionListener {
+interface OnRecognitionListener {
     fun onReadyForSpeech()
     fun onBeginningOfSpeech()
     fun onEndOfSpeech()

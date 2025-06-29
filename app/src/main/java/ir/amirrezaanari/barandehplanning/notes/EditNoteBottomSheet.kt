@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -48,7 +47,7 @@ import ir.amirrezaanari.barandehplanning.ui.theme.secondary
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditNoteBottomSheet(
-    note: NoteEntity, // یادداشت مورد نظر برای ویرایش
+    note: NoteEntity,
     viewModel: NoteViewModel,
     onDismiss: () -> Unit,
 ) {

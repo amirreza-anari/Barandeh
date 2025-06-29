@@ -30,7 +30,7 @@ import saman.zamani.persiandate.PersianDateFormat
 data class NoteEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,
-    val color: Int, // مقدار رنگ می‌تواند یک مقدار هگز باشد مانند #FF5733
+    val color: Int,
     val content: String,
     val timestamp: String = getPersianDate()
 )
@@ -53,7 +53,7 @@ interface NoteDao {
     @Delete
     suspend fun deleteNote(note: NoteEntity)
 
-    @Update // روش استاندارد برای بروزرسانی یادداشت
+    @Update
     suspend fun updateNote(note: NoteEntity)
 }
 
@@ -87,7 +87,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     init {
         viewModelScope.launch {
             noteDao.getAllNotes().collectLatest { list ->
-                _allNotes.emit(list) // مستقیماً مقدار جدید را به StateFlow اختصاص می‌دهد
+                _allNotes.emit(list)
             }
         }
     }
@@ -99,7 +99,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
                 title = title,
                 color = color,
                 content = content,
-                timestamp = getPersianDate() // ذخیره تاریخ شمسی هنگام اضافه کردن یادداشت
+                timestamp = getPersianDate()
             )
             noteDao.insertNote(note)
         }
@@ -114,7 +114,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateNote(note: NoteEntity) {
         viewModelScope.launch {
-            noteDao.updateNote(note) // متد جدید برای ویرایش یادداشت
+            noteDao.updateNote(note)
         }
     }
 
