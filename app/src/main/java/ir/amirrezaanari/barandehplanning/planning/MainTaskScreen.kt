@@ -56,7 +56,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavHostController
 import ir.amirrezaanari.barandehplanning.R
+import ir.amirrezaanari.barandehplanning.navigation.POMODORO_ROUTE
 import ir.amirrezaanari.barandehplanning.planning.components.DateSelector
 import ir.amirrezaanari.barandehplanning.planning.components.SectionFilterChip
 import ir.amirrezaanari.barandehplanning.planning.components.TaskItem
@@ -69,9 +71,11 @@ import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
 import ir.amirrezaanari.barandehplanning.ui.theme.red
 import ir.amirrezaanari.barandehplanning.ui.theme.secondary
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
-fun MainPlannerScreen(viewModel: PlannerViewModel) {
+fun MainPlannerScreen(viewModel: PlannerViewModel, navController: NavHostController) {
     var showAddBottomSheet by remember { mutableStateOf(false) }
     var showEditBottomSheet by remember { mutableStateOf(false) }
     var showAddVoiceTaskBottomSheet by remember { mutableStateOf(false) }
@@ -159,6 +163,12 @@ fun MainPlannerScreen(viewModel: PlannerViewModel) {
                                     },
                                     onCheckChange = { taskTick ->
                                         viewModel.toggleTaskCheckStatus(taskTick)
+                                    },
+                                    onPomodoroClick = {
+                                        // URL encode arguments to handle special characters
+                                        val encodedTitle = URLEncoder.encode(it.title, StandardCharsets.UTF_8.toString())
+                                        val encodedDetails = URLEncoder.encode(it.details, StandardCharsets.UTF_8.toString())
+                                        navController.navigate("$POMODORO_ROUTE/$encodedTitle/$encodedDetails")
                                     }
                                 )
                             }

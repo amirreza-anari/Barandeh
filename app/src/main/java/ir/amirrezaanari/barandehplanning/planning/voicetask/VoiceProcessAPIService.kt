@@ -15,9 +15,9 @@ data class VoiceRequest(val text: String)
 data class GeminiResponse(val tasks: List<TaskItem>)
 
 data class TaskItem(
-    val taskName: String,
-    val startTime: String,
-    val endTime: String
+    val task_name: String,
+    val start_time: String,
+    val end_time: String
 )
 
 interface GeminiApiService {

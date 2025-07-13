@@ -49,6 +49,7 @@ import ir.amirrezaanari.barandehplanning.ui.theme.primary
 import ir.amirrezaanari.barandehplanning.ui.theme.red
 import ir.amirrezaanari.barandehplanning.ui.theme.secondary
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -218,8 +219,9 @@ fun AddTaskBottomSheet(
             },
             headerText = "زمان پایان رو انتخاب کن!",
             isopen = isEndTimeDialogOpen,
-            tasktime = LocalTime.now().toString()
+            tasktime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
         )
+
         TimePickerDialog(
             onDismissRequest = { isStartTimeDialogOpen = false },
             onClick = { string, bool ->
@@ -228,8 +230,7 @@ fun AddTaskBottomSheet(
             },
             headerText = "زمان شروع رو انتخاب کن!",
             isopen = isStartTimeDialogOpen,
-            tasktime = LocalTime.now().toString()
-
+            tasktime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
         )
     }
 }

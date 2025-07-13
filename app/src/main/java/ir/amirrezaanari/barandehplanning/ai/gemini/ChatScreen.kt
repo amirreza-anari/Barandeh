@@ -1,6 +1,7 @@
 package ir.amirrezaanari.barandehplanning.ai.gemini
 
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -156,6 +157,7 @@ fun ChatList(
     }
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun ChatBubbleItem(
     chatMessage: ChatMessage

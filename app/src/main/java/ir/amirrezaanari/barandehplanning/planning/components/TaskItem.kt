@@ -25,10 +25,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -53,13 +58,15 @@ import ir.amirrezaanari.barandehplanning.planning.database.TaskEntity
 import ir.amirrezaanari.barandehplanning.ui.theme.green
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
+import ir.amirrezaanari.barandehplanning.ui.theme.red
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskItem(
     task: TaskEntity,
     onTaskClick: (TaskEntity) -> Unit,
-    onCheckChange: (TaskEntity) -> Unit = {}
+    onCheckChange: (TaskEntity) -> Unit = {},
+    onPomodoroClick: (TaskEntity) -> Unit = {} // Add the new lambda parameter
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -110,8 +117,8 @@ fun TaskItem(
             .combinedClickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = {expanded = !expanded},
-                onLongClick = {onTaskClick(task)},
+                onClick = { expanded = !expanded },
+                onLongClick = { onTaskClick(task) },
             )
             .padding(vertical = 5.dp, horizontal = 10.dp),
         colors = CardDefaults.cardColors(
@@ -208,9 +215,10 @@ fun TaskItem(
                     enter = fadeIn(animationSpec = tween(400)),
                     exit = fadeOut(animationSpec = tween(400))
                 ) {
-                    LazyColumn(modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.8f)
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.8f)
                     ) {
                         item {
                             Text(
@@ -224,12 +232,30 @@ fun TaskItem(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                Row (
+                Row(
                     modifier = Modifier
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
-                ){
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    if (task.isPlanned) {
+                        Button(
+                            onClick = { onPomodoroClick(task) },
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = mainwhite,
+                                containerColor = Color.Transparent
+                            )
+                        ) {
+                            Row {
+                                Icon(
+                                    Icons.Rounded.PlayArrow,
+                                    contentDescription = "pomodoro Timer"
+                                )
+                                Text("پومودورو")
+                            }
+                        }
+                    }
                     IconButton(
                         onClick = { onTaskClick(task) },
                     ) {

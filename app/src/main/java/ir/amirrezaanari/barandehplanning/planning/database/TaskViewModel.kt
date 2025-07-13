@@ -107,12 +107,12 @@ class PlannerViewModel(
     }
 
     private fun createAndAddTask(taskItem: TaskItem) {
-        if (taskItem.taskName.isNotBlank() && taskItem.startTime.isNotBlank() && taskItem.endTime.isNotBlank()) {
+        if (taskItem.task_name.isNotBlank() && taskItem.start_time.isNotBlank() && taskItem.end_time.isNotBlank()) {
             val newTask = TaskEntity(
                 date = _selectedDate.value.toString(),
-                title = taskItem.taskName,
-                startTime = taskItem.startTime,
-                endTime = taskItem.endTime,
+                title = taskItem.task_name,
+                startTime = taskItem.start_time,
+                endTime = taskItem.end_time,
                 details = "",
                 color = 0,
                 isPlanned = true,

@@ -56,13 +56,19 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE date = :date AND isPlanned = 0")
     fun getCompletedTasksForDate(date: String): Flow<List<TaskEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Query("SELECT * FROM tasks WHERE date BETWEEN :startDate AND :endDate AND isPlanned = 0")
+    fun getCompletedTasksForDateRange(startDate: String, endDate: String): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE date BETWEEN :startDate AND :endDate")
+    fun getAllTasksForDateRange(startDate: String, endDate: String): Flow<List<TaskEntity>>
+
+    @androidx.room.Insert(onConflict = androidx.room.OnConflictStrategy.REPLACE)
     suspend fun insertTask(task: TaskEntity)
 
-    @Update
+    @androidx.room.Update
     suspend fun updateTask(task: TaskEntity)
 
-    @Delete
+    @androidx.room.Delete
     suspend fun deleteTask(task: TaskEntity)
 
     @Query("SELECT COUNT(*) FROM tasks WHERE isPlanned = 1")
@@ -76,7 +82,21 @@ interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE parentId = :parentId AND isPlanned = 0 LIMIT 1")
     suspend fun findCompletedCopy(parentId: Long): TaskEntity?
+
+    @Query("SELECT COUNT(*) FROM tasks WHERE date = :date AND isPlanned = 0")
+    fun getCompletedTasksCountForDate(date: String): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM tasks WHERE date = :date AND isPlanned = 1")
+    fun getPlannedTasksCountForDate(date: String): Flow<Int>
+
+    @Query("SELECT date, COUNT(*) as taskCount FROM tasks WHERE isPlanned = 0 GROUP BY date ORDER BY taskCount DESC LIMIT 1")
+    suspend fun getMostProductiveDay(): ProductiveDay?
 }
+
+data class ProductiveDay(
+    val date: String,
+    val taskCount: Int
+)
 
 @Database(entities = [DateEntity::class, TaskEntity::class], version = 2)
 abstract class PlannerDatabase : RoomDatabase() {
@@ -103,8 +123,10 @@ abstract class PlannerDatabase : RoomDatabase() {
     }
 }
 
-class PlannerRepository(private val dateDao: DateDao, private val taskDao: TaskDao) {
-//    fun getAllDates() = dateDao.getAllDates()
+class PlannerRepository(
+    private val dateDao: DateDao,
+    private val taskDao: TaskDao
+) {
 
     suspend fun insertDate(date: DateEntity) {
         dateDao.insertDate(date)
@@ -114,6 +136,12 @@ class PlannerRepository(private val dateDao: DateDao, private val taskDao: TaskD
     fun getPlannedTasksForDate(date: String) = taskDao.getPlannedTasksForDate(date)
 
     fun getCompletedTasksForDate(date: String) = taskDao.getCompletedTasksForDate(date)
+
+    fun getCompletedTasksForDateRange(startDate: String, endDate: String) =
+        taskDao.getCompletedTasksForDateRange(startDate, endDate)
+
+    fun getAllTasksForDateRange(startDate: String, endDate: String) =
+        taskDao.getAllTasksForDateRange(startDate, endDate)
 
     suspend fun insertTask(task: TaskEntity) {
         taskDao.insertTask(task)
@@ -135,4 +163,9 @@ class PlannerRepository(private val dateDao: DateDao, private val taskDao: TaskD
         taskDao.deleteCompletedCopies(parentId)
     }
 
+    fun getCompletedTasksCountForDate(date: String) = taskDao.getCompletedTasksCountForDate(date)
+
+    fun getPlannedTasksCountForDate(date: String) = taskDao.getPlannedTasksCountForDate(date)
+
+    suspend fun getMostProductiveDay() = taskDao.getMostProductiveDay()
 }

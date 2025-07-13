@@ -26,6 +26,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItem.Home,
         BottomNavItem.Planning,
         BottomNavItem.Tools,
+        BottomNavItem.Stats,
         BottomNavItem.AiAssistant,
     )
 

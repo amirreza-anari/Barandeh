@@ -30,6 +30,13 @@ sealed class BottomNavItem(
         title = "ابزارها"
     )
 
+    data object Stats : BottomNavItem(
+        "stats",
+        R.drawable.stats,
+        R.drawable.stats_selected,
+        "آمار"
+    )
+
     data object AiAssistant : BottomNavItem(
         "aiassistant",
         R.drawable.ai,
