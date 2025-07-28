@@ -11,6 +11,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -51,6 +51,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,7 +59,6 @@ import ir.amirrezaanari.barandehplanning.planning.database.TaskEntity
 import ir.amirrezaanari.barandehplanning.ui.theme.green
 import ir.amirrezaanari.barandehplanning.ui.theme.mainwhite
 import ir.amirrezaanari.barandehplanning.ui.theme.primary
-import ir.amirrezaanari.barandehplanning.ui.theme.red
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -178,7 +178,9 @@ fun TaskItem(
                     fontSize = 23.sp,
                     fontWeight = FontWeight.Bold,
                     textDecoration = if (task.isChecked) TextDecoration.LineThrough else TextDecoration.None,
-                    color = textColor
+                    color = textColor,
+                    modifier = Modifier.weight(1f).basicMarquee(),
+                    textAlign = TextAlign.Center
                 )
 
                 Card(
